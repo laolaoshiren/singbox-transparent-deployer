@@ -1,8 +1,174 @@
-[CmdletBinding()]
-param()
+﻿[CmdletBinding()]
+param(
+    [string]$Language = 'zh-CN'
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+function Resolve-Language {
+    param(
+        [string]$Value
+    )
+
+    $normalized = ''
+    if ($null -ne $Value) {
+        $normalized = $Value.Trim().ToLowerInvariant()
+    }
+
+    switch ($normalized) {
+        'en' { return 'en-US' }
+        'en-us' { return 'en-US' }
+        'zh' { return 'zh-CN' }
+        'zh-cn' { return 'zh-CN' }
+        default { return 'zh-CN' }
+    }
+}
+
+$script:Language = Resolve-Language -Value $Language
+$script:Messages = @{
+    'zh-CN' = @{
+        DefaultTag               = '默认'
+        SelectOptionNumber       = '请输入选项编号'
+        EnterNumberBetween       = '请输入 1 到 {0} 之间的数字。'
+        YesLabel                 = '是'
+        NoLabel                  = '否'
+        EnterOneOrTwo            = '请输入 1 或 2。'
+        ValidPortRange           = '请输入 1 到 65535 之间的有效端口。'
+        UriSchemeInvalid         = 'URI 协议必须是 vless://'
+        UriMissingUuid           = 'VLESS URI 缺少 UUID。'
+        UriMissingServer         = 'VLESS URI 缺少服务器地址。'
+        UriMissingPort           = 'VLESS URI 缺少有效端口。'
+        InstallPoshSsh           = '未检测到 Posh-SSH，正在为当前用户安装...'
+        ServerIpPrompt           = 'Ubuntu 服务器 IPv4'
+        InvalidServerIp          = '请输入有效的 IPv4 服务器地址。'
+        SshUsernamePrompt        = 'SSH 用户名'
+        SshPasswordPrompt        = 'SSH 密码（同时作为 sudo 密码）'
+        ProxyModePrompt          = '代理模式'
+        SocksServerPrompt        = 'SOCKS5 服务器'
+        InvalidSocksServer       = '请输入有效的 SOCKS5 主机名或 IPv4 地址。'
+        SocksPortPrompt          = 'SOCKS5 端口'
+        VlessModeIntro           = 'VLESS 模式支持 direct/tls/reality，以及 none/ws/grpc/httpupgrade 传输。'
+        VlessInputModePrompt     = 'VLESS 输入方式'
+        VlessInputUriLabel       = 'URI 链接'
+        VlessInputManualLabel    = '手动输入'
+        VlessUriPrompt           = 'VLESS URI'
+        VlessServerPrompt        = 'VLESS 服务器'
+        InvalidVlessServer       = '请输入有效的 VLESS 主机名或 IPv4 地址。'
+        VlessPortPrompt          = 'VLESS 端口'
+        VlessUuidPrompt          = 'VLESS UUID'
+        InvalidUuid              = '请输入有效的 UUID。'
+        VlessFlowPrompt          = 'VLESS flow（留空表示无）'
+        VlessSecurityPrompt      = 'VLESS 安全类型'
+        VlessTransportPrompt     = 'VLESS 传输类型'
+        TlsServerNamePrompt      = 'TLS server_name / SNI'
+        AllowInsecurePrompt      = '是否允许跳过 TLS 证书校验'
+        UtlsFingerprintPrompt    = 'uTLS 指纹（留空表示不设置）'
+        RealityPublicKeyPrompt   = 'Reality public_key'
+        RealityShortIdPrompt     = 'Reality short_id（留空表示无）'
+        WsPathPrompt             = 'WebSocket 路径'
+        WsHostPrompt             = 'WebSocket Host 头（留空表示不设置）'
+        GrpcServicePrompt        = 'gRPC service_name'
+        HttpUpgradePathPrompt    = 'HTTPUpgrade 路径'
+        HttpUpgradeHostPrompt    = 'HTTPUpgrade host（留空表示不设置）'
+        VlessServerInvalid       = 'VLESS 服务器必须是主机名或 IPv4 地址。'
+        VlessUuidInvalid         = 'VLESS UUID 无效。'
+        VlessSecurityInvalid     = 'VLESS 安全类型必须是 none、tls 或 reality。'
+        VlessTransportInvalid    = 'VLESS 传输类型必须是 none、ws、grpc 或 httpupgrade。'
+        TlsServerNameRequired    = 'TLS 或 Reality 模式必须提供 server_name / SNI。'
+        RealityPublicKeyRequired = 'Reality 模式必须提供 public_key。'
+        VlessNoBootstrap1        = '注意：VLESS 模式不会通过 VLESS 节点为安装过程引导下载。'
+        VlessNoBootstrap2        = '首次运行时，远端服务器必须能直接下载 sing-box 安装脚本。'
+        ConnectingRemote         = '正在连接远端服务器...'
+        RunningChecks            = '正在执行远端连通性检查...'
+        UpstreamUnreachable      = '远端服务器无法连通所选上游代理。'
+        InstallingConfiguring    = '正在安装并配置 sing-box...'
+        RemoteInstallFailed      = '远端安装或配置失败。'
+        VerifyingStatus          = '正在验证服务状态和路由结果...'
+        VerificationFailed       = '部署后的验证失败。'
+        DeploymentSuccess        = '部署完成。'
+    }
+    'en-US' = @{
+        DefaultTag               = 'default'
+        SelectOptionNumber       = 'Select option number'
+        EnterNumberBetween       = 'Enter a number between 1 and {0}.'
+        YesLabel                 = 'Yes'
+        NoLabel                  = 'No'
+        EnterOneOrTwo            = 'Enter 1 or 2.'
+        ValidPortRange           = 'Enter a valid port between 1 and 65535.'
+        UriSchemeInvalid         = 'The URI scheme must be vless://'
+        UriMissingUuid           = 'The VLESS URI is missing the UUID.'
+        UriMissingServer         = 'The VLESS URI is missing the server address.'
+        UriMissingPort           = 'The VLESS URI is missing a valid port.'
+        InstallPoshSsh           = 'Posh-SSH not found. Installing for the current user...'
+        ServerIpPrompt           = 'Ubuntu server IPv4'
+        InvalidServerIp          = 'Enter a valid IPv4 server address.'
+        SshUsernamePrompt        = 'SSH username'
+        SshPasswordPrompt        = 'SSH password (also used for sudo)'
+        ProxyModePrompt          = 'Proxy mode'
+        SocksServerPrompt        = 'SOCKS5 server'
+        InvalidSocksServer       = 'Enter a valid SOCKS5 hostname or IPv4 address.'
+        SocksPortPrompt          = 'SOCKS5 port'
+        VlessModeIntro           = 'VLESS mode supports direct/tls/reality and transport none/ws/grpc/httpupgrade.'
+        VlessInputModePrompt     = 'VLESS input mode'
+        VlessInputUriLabel       = 'URI'
+        VlessInputManualLabel    = 'manual'
+        VlessUriPrompt           = 'VLESS URI'
+        VlessServerPrompt        = 'VLESS server'
+        InvalidVlessServer       = 'Enter a valid VLESS hostname or IPv4 address.'
+        VlessPortPrompt          = 'VLESS port'
+        VlessUuidPrompt          = 'VLESS UUID'
+        InvalidUuid              = 'Enter a valid UUID.'
+        VlessFlowPrompt          = 'VLESS flow (blank if none)'
+        VlessSecurityPrompt      = 'VLESS security'
+        VlessTransportPrompt     = 'VLESS transport'
+        TlsServerNamePrompt      = 'TLS server_name / SNI'
+        AllowInsecurePrompt      = 'Allow insecure TLS verify'
+        UtlsFingerprintPrompt    = 'uTLS fingerprint (blank if none)'
+        RealityPublicKeyPrompt   = 'Reality public_key'
+        RealityShortIdPrompt     = 'Reality short_id (blank if none)'
+        WsPathPrompt             = 'WebSocket path'
+        WsHostPrompt             = 'WebSocket Host header (blank if none)'
+        GrpcServicePrompt        = 'gRPC service_name'
+        HttpUpgradePathPrompt    = 'HTTPUpgrade path'
+        HttpUpgradeHostPrompt    = 'HTTPUpgrade host (blank if none)'
+        VlessServerInvalid       = 'The VLESS server must be a hostname or IPv4 address.'
+        VlessUuidInvalid         = 'The VLESS UUID is invalid.'
+        VlessSecurityInvalid     = 'The VLESS security value must be none, tls, or reality.'
+        VlessTransportInvalid    = 'The VLESS transport value must be none, ws, grpc, or httpupgrade.'
+        TlsServerNameRequired    = 'TLS or Reality mode requires server_name / SNI.'
+        RealityPublicKeyRequired = 'Reality mode requires public_key.'
+        VlessNoBootstrap1        = 'Note: VLESS mode does not bootstrap package downloads through the VLESS node.'
+        VlessNoBootstrap2        = 'The remote server must be able to download the sing-box installer directly on the first run.'
+        ConnectingRemote         = 'Connecting to the remote server...'
+        RunningChecks            = 'Running remote reachability checks...'
+        UpstreamUnreachable      = 'The remote server cannot reach the selected upstream proxy.'
+        InstallingConfiguring    = 'Installing and configuring sing-box...'
+        RemoteInstallFailed      = 'Remote installation/configuration failed.'
+        VerifyingStatus          = 'Verifying service status and routing...'
+        VerificationFailed       = 'Verification failed after deployment.'
+        DeploymentSuccess        = 'Deployment completed successfully.'
+    }
+}
+
+function Get-Text {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Key,
+        [object[]]$FormatArgs = @()
+    )
+
+    $template = $script:Messages[$script:Language][$Key]
+    if (-not $template) {
+        $template = $script:Messages['en-US'][$Key]
+    }
+
+    if ($FormatArgs.Count -gt 0) {
+        return [string]::Format($template, $FormatArgs)
+    }
+
+    return $template
+}
 
 function Read-RequiredValue {
     param(
@@ -54,17 +220,18 @@ function Read-ChoiceValue {
         [string]$Prompt,
         [Parameter(Mandatory = $true)]
         [string[]]$Choices,
-        [string]$Default = ''
+        [string]$Default = '',
+        [string[]]$ChoiceLabels = @()
     )
 
     $normalizedChoices = $Choices | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+    $displayChoices = if ($ChoiceLabels.Count -eq $normalizedChoices.Count) { $ChoiceLabels } else { $normalizedChoices }
     while ($true) {
         Write-Host $Prompt
         for ($i = 0; $i -lt $normalizedChoices.Count; $i++) {
-            $choice = $normalizedChoices[$i]
-            $label = '{0}. {1}' -f ($i + 1), $choice
-            if ($Default -and $choice.Equals($Default, [System.StringComparison]::OrdinalIgnoreCase)) {
-                $label = '{0} [default]' -f $label
+            $label = '{0}. {1}' -f ($i + 1), $displayChoices[$i]
+            if ($Default -and $normalizedChoices[$i].Equals($Default, [System.StringComparison]::OrdinalIgnoreCase)) {
+                $label = '{0} [{1}]' -f $label, (Get-Text 'DefaultTag')
             }
 
             Write-Host $label
@@ -80,7 +247,7 @@ function Read-ChoiceValue {
             }
         }
 
-        $value = Read-OptionalValue -Prompt 'Select option number' -Default $defaultIndex
+        $value = Read-OptionalValue -Prompt (Get-Text 'SelectOptionNumber') -Default $defaultIndex
 
         $selectedIndex = 0
         if ([int]::TryParse($value, [ref]$selectedIndex)) {
@@ -95,7 +262,13 @@ function Read-ChoiceValue {
             }
         }
 
-        Write-Warning ('Enter a number between 1 and {0}.' -f $normalizedChoices.Count)
+        for ($i = 0; $i -lt $displayChoices.Count; $i++) {
+            if ($value.Equals($displayChoices[$i], [System.StringComparison]::OrdinalIgnoreCase)) {
+                return $normalizedChoices[$i]
+            }
+        }
+
+        Write-Warning (Get-Text 'EnterNumberBetween' $normalizedChoices.Count)
     }
 }
 
@@ -108,17 +281,17 @@ function Read-YesNo {
 
     while ($true) {
         Write-Host $Prompt
-        Write-Host ('1. Yes{0}' -f ($(if ($Default) { ' [default]' } else { '' })))
-        Write-Host ('2. No{0}' -f ($(if (-not $Default) { ' [default]' } else { '' })))
+        Write-Host ('1. {0}{1}' -f (Get-Text 'YesLabel'), ($(if ($Default) { ' [{0}]' -f (Get-Text 'DefaultTag') } else { '' })))
+        Write-Host ('2. {0}{1}' -f (Get-Text 'NoLabel'), ($(if (-not $Default) { ' [{0}]' -f (Get-Text 'DefaultTag') } else { '' })))
         $defaultLabel = if ($Default) { '1' } else { '2' }
-        $value = Read-OptionalValue -Prompt 'Select option number' -Default $defaultLabel
+        $value = Read-OptionalValue -Prompt (Get-Text 'SelectOptionNumber') -Default $defaultLabel
 
         switch -Regex ($value.ToLowerInvariant()) {
             '^1$' { return $true }
             '^2$' { return $false }
-            '^(y|yes)$' { return $true }
-            '^(n|no)$' { return $false }
-            default { Write-Warning 'Enter 1 or 2.' }
+            '^(y|yes|是)$' { return $true }
+            '^(n|no|否)$' { return $false }
+            default { Write-Warning (Get-Text 'EnterOneOrTwo') }
         }
     }
 }
@@ -138,7 +311,7 @@ function Read-Port {
             return $port
         }
 
-        Write-Warning 'Enter a valid TCP port between 1 and 65535.'
+        Write-Warning (Get-Text 'ValidPortRange')
     }
 }
 
@@ -209,8 +382,8 @@ function ConvertTo-BoolLike {
     }
 
     switch -Regex ($Value.Trim().ToLowerInvariant()) {
-        '^(1|true|yes|y|on)$' { return $true }
-        '^(0|false|no|n|off)$' { return $false }
+        '^(1|true|yes|y|on|是)$' { return $true }
+        '^(0|false|no|n|off|否)$' { return $false }
         default { return $false }
     }
 }
@@ -279,19 +452,19 @@ function ConvertFrom-VlessUri {
 
     $uri = [Uri]$UriString
     if (-not $uri.Scheme.Equals('vless', [System.StringComparison]::OrdinalIgnoreCase)) {
-        throw 'The URI scheme must be vless://'
+        throw (Get-Text 'UriSchemeInvalid')
     }
 
     if ([string]::IsNullOrWhiteSpace($uri.UserInfo)) {
-        throw 'The VLESS URI is missing the UUID.'
+        throw (Get-Text 'UriMissingUuid')
     }
 
     if ([string]::IsNullOrWhiteSpace($uri.Host)) {
-        throw 'The VLESS URI is missing the server address.'
+        throw (Get-Text 'UriMissingServer')
     }
 
     if ($uri.Port -lt 1 -or $uri.Port -gt 65535) {
-        throw 'The VLESS URI is missing a valid port.'
+        throw (Get-Text 'UriMissingPort')
     }
 
     $query = ConvertFrom-UriQuery -Query $uri.Query
@@ -327,7 +500,7 @@ function ConvertFrom-VlessUri {
 
 function Ensure-PoshSsh {
     if (-not (Get-Module -ListAvailable -Name Posh-SSH)) {
-        Write-Host 'Posh-SSH not found. Installing for the current user...'
+        Write-Host (Get-Text 'InstallPoshSsh')
         Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force | Out-Null
         if (Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue) {
             Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
@@ -828,30 +1001,30 @@ echo /etc/sing-box/config.json
 
 Ensure-PoshSsh
 
-$serverIp = Read-RequiredValue -Prompt 'Ubuntu server IPv4'
+$serverIp = Read-RequiredValue -Prompt (Get-Text 'ServerIpPrompt')
 while (-not (Test-Ipv4Address -Value $serverIp)) {
-    Write-Warning 'Enter a valid IPv4 server address.'
-    $serverIp = Read-RequiredValue -Prompt 'Ubuntu server IPv4'
+    Write-Warning (Get-Text 'InvalidServerIp')
+    $serverIp = Read-RequiredValue -Prompt (Get-Text 'ServerIpPrompt')
 }
 
-$sshUser = Read-RequiredValue -Prompt 'SSH username'
-$sshPasswordSecure = Read-Host 'SSH password (also used for sudo)' -AsSecureString
+$sshUser = Read-RequiredValue -Prompt (Get-Text 'SshUsernamePrompt')
+$sshPasswordSecure = Read-Host (Get-Text 'SshPasswordPrompt') -AsSecureString
 $sshPasswordPlain = Get-PlainTextFromSecureString -SecureString $sshPasswordSecure
 
-$mode = Read-ChoiceValue -Prompt 'Proxy mode' -Choices @('SOCKS5', 'VLESS') -Default 'SOCKS5'
+$mode = Read-ChoiceValue -Prompt (Get-Text 'ProxyModePrompt') -Choices @('SOCKS5', 'VLESS') -Default 'SOCKS5'
 $proxySpec = @{}
 $bootstrapProxy = ''
 $probeCommand = ''
 $verifyCommand = ''
 
 if ($mode -eq 'SOCKS5') {
-    $socksServer = Read-RequiredValue -Prompt 'SOCKS5 server'
+    $socksServer = Read-RequiredValue -Prompt (Get-Text 'SocksServerPrompt')
     while (-not (Test-HostOrIpv4 -Value $socksServer)) {
-        Write-Warning 'Enter a valid SOCKS5 hostname or IPv4 address.'
-        $socksServer = Read-RequiredValue -Prompt 'SOCKS5 server'
+        Write-Warning (Get-Text 'InvalidSocksServer')
+        $socksServer = Read-RequiredValue -Prompt (Get-Text 'SocksServerPrompt')
     }
 
-    $socksPort = Read-Port -Prompt 'SOCKS5 port' -Default 10808
+    $socksPort = Read-Port -Prompt (Get-Text 'SocksPortPrompt') -Default 10808
     $proxySpec = @{
         Server = $socksServer
         Port   = $socksPort
@@ -862,13 +1035,13 @@ if ($mode -eq 'SOCKS5') {
 }
 else {
     Write-Host ''
-    Write-Host 'VLESS mode supports direct/tls/reality and transport none/ws/grpc/httpupgrade.'
-    $vlessInputMode = Read-ChoiceValue -Prompt 'VLESS input mode' -Choices @('uri', 'manual') -Default 'uri'
+    Write-Host (Get-Text 'VlessModeIntro')
+    $vlessInputMode = Read-ChoiceValue -Prompt (Get-Text 'VlessInputModePrompt') -Choices @('uri', 'manual') -ChoiceLabels @((Get-Text 'VlessInputUriLabel'), (Get-Text 'VlessInputManualLabel')) -Default 'uri'
 
     if ($vlessInputMode -eq 'uri') {
         while ($true) {
             try {
-                $vlessUri = Read-RequiredValue -Prompt 'VLESS URI'
+                $vlessUri = Read-RequiredValue -Prompt (Get-Text 'VlessUriPrompt')
                 $proxySpec = ConvertFrom-VlessUri -UriString $vlessUri
                 break
             }
@@ -878,22 +1051,22 @@ else {
         }
     }
     else {
-        $vlessServer = Read-RequiredValue -Prompt 'VLESS server'
+        $vlessServer = Read-RequiredValue -Prompt (Get-Text 'VlessServerPrompt')
         while (-not (Test-HostOrIpv4 -Value $vlessServer)) {
-            Write-Warning 'Enter a valid VLESS hostname or IPv4 address.'
-            $vlessServer = Read-RequiredValue -Prompt 'VLESS server'
+            Write-Warning (Get-Text 'InvalidVlessServer')
+            $vlessServer = Read-RequiredValue -Prompt (Get-Text 'VlessServerPrompt')
         }
 
-        $vlessPort = Read-Port -Prompt 'VLESS port'
-        $vlessUuid = Read-RequiredValue -Prompt 'VLESS UUID'
+        $vlessPort = Read-Port -Prompt (Get-Text 'VlessPortPrompt')
+        $vlessUuid = Read-RequiredValue -Prompt (Get-Text 'VlessUuidPrompt')
         while (-not (Test-Uuid -Value $vlessUuid)) {
-            Write-Warning 'Enter a valid UUID.'
-            $vlessUuid = Read-RequiredValue -Prompt 'VLESS UUID'
+            Write-Warning (Get-Text 'InvalidUuid')
+            $vlessUuid = Read-RequiredValue -Prompt (Get-Text 'VlessUuidPrompt')
         }
 
-        $vlessFlow = Read-OptionalValue -Prompt 'VLESS flow (blank if none)' -Default ''
-        $vlessSecurity = Read-ChoiceValue -Prompt 'VLESS security' -Choices @('none', 'tls', 'reality')
-        $vlessTransport = Read-ChoiceValue -Prompt 'VLESS transport' -Choices @('none', 'ws', 'grpc', 'httpupgrade') -Default 'none'
+        $vlessFlow = Read-OptionalValue -Prompt (Get-Text 'VlessFlowPrompt') -Default ''
+        $vlessSecurity = Read-ChoiceValue -Prompt (Get-Text 'VlessSecurityPrompt') -Choices @('none', 'tls', 'reality')
+        $vlessTransport = Read-ChoiceValue -Prompt (Get-Text 'VlessTransportPrompt') -Choices @('none', 'ws', 'grpc', 'httpupgrade') -Default 'none'
 
         $proxySpec = @{
             Server               = $vlessServer
@@ -913,55 +1086,55 @@ else {
         }
 
         if ($vlessSecurity -ne 'none') {
-            $proxySpec.ServerName = Read-RequiredValue -Prompt 'TLS server_name / SNI'
-            $proxySpec.Insecure = Read-YesNo -Prompt 'Allow insecure TLS verify' -Default $false
+            $proxySpec.ServerName = Read-RequiredValue -Prompt (Get-Text 'TlsServerNamePrompt')
+            $proxySpec.Insecure = Read-YesNo -Prompt (Get-Text 'AllowInsecurePrompt') -Default $false
 
             $fingerprintDefault = if ($vlessSecurity -eq 'reality') { 'chrome' } else { '' }
-            $proxySpec.UtlsFingerprint = Read-OptionalValue -Prompt 'uTLS fingerprint (blank if none)' -Default $fingerprintDefault
+            $proxySpec.UtlsFingerprint = Read-OptionalValue -Prompt (Get-Text 'UtlsFingerprintPrompt') -Default $fingerprintDefault
 
             if ($vlessSecurity -eq 'reality') {
-                $proxySpec.RealityPublicKey = Read-RequiredValue -Prompt 'Reality public_key'
-                $proxySpec.RealityShortId = Read-OptionalValue -Prompt 'Reality short_id (blank if none)' -Default ''
+                $proxySpec.RealityPublicKey = Read-RequiredValue -Prompt (Get-Text 'RealityPublicKeyPrompt')
+                $proxySpec.RealityShortId = Read-OptionalValue -Prompt (Get-Text 'RealityShortIdPrompt') -Default ''
             }
         }
 
         switch ($vlessTransport) {
             'ws' {
-                $proxySpec.TransportPath = Read-OptionalValue -Prompt 'WebSocket path' -Default '/'
-                $proxySpec.TransportHost = Read-OptionalValue -Prompt 'WebSocket Host header (blank if none)' -Default ''
+                $proxySpec.TransportPath = Read-OptionalValue -Prompt (Get-Text 'WsPathPrompt') -Default '/'
+                $proxySpec.TransportHost = Read-OptionalValue -Prompt (Get-Text 'WsHostPrompt') -Default ''
             }
             'grpc' {
-                $proxySpec.TransportServiceName = Read-RequiredValue -Prompt 'gRPC service_name'
+                $proxySpec.TransportServiceName = Read-RequiredValue -Prompt (Get-Text 'GrpcServicePrompt')
             }
             'httpupgrade' {
-                $proxySpec.TransportPath = Read-OptionalValue -Prompt 'HTTPUpgrade path' -Default '/'
-                $proxySpec.TransportHost = Read-OptionalValue -Prompt 'HTTPUpgrade host (blank if none)' -Default ''
+                $proxySpec.TransportPath = Read-OptionalValue -Prompt (Get-Text 'HttpUpgradePathPrompt') -Default '/'
+                $proxySpec.TransportHost = Read-OptionalValue -Prompt (Get-Text 'HttpUpgradeHostPrompt') -Default ''
             }
         }
     }
 
     if (-not (Test-HostOrIpv4 -Value $proxySpec.Server)) {
-        throw 'The VLESS server must be a hostname or IPv4 address.'
+        throw (Get-Text 'VlessServerInvalid')
     }
 
     if (-not (Test-Uuid -Value $proxySpec.Uuid)) {
-        throw 'The VLESS UUID is invalid.'
+        throw (Get-Text 'VlessUuidInvalid')
     }
 
     if ($proxySpec.Security -notin @('none', 'tls', 'reality')) {
-        throw 'The VLESS security value must be none, tls, or reality.'
+        throw (Get-Text 'VlessSecurityInvalid')
     }
 
     if ($proxySpec.Transport -notin @('none', 'ws', 'grpc', 'httpupgrade')) {
-        throw 'The VLESS transport value must be none, ws, grpc, or httpupgrade.'
+        throw (Get-Text 'VlessTransportInvalid')
     }
 
     if ($proxySpec.Security -ne 'none' -and [string]::IsNullOrWhiteSpace($proxySpec.ServerName)) {
-        throw 'TLS or Reality mode requires server_name / SNI.'
+        throw (Get-Text 'TlsServerNameRequired')
     }
 
     if ($proxySpec.Security -eq 'reality' -and [string]::IsNullOrWhiteSpace($proxySpec.RealityPublicKey)) {
-        throw 'Reality mode requires public_key.'
+        throw (Get-Text 'RealityPublicKeyRequired')
     }
 
     if ($proxySpec.Transport -eq 'ws' -and [string]::IsNullOrWhiteSpace($proxySpec.TransportPath)) {
@@ -972,8 +1145,8 @@ else {
     $verifyCommand = New-VlessVerifyCommand -Server $proxySpec.Server -Port $proxySpec.Port
 
     Write-Host ''
-    Write-Host 'Note: VLESS mode does not bootstrap package downloads through the VLESS node.'
-    Write-Host 'The remote server must be able to download the sing-box installer directly on the first run.'
+    Write-Host (Get-Text 'VlessNoBootstrap1')
+    Write-Host (Get-Text 'VlessNoBootstrap2')
 }
 
 $config = New-SingBoxConfig -Mode $mode -ProxySpec $proxySpec
@@ -984,37 +1157,37 @@ $session = $null
 
 try {
     Write-Host ''
-    Write-Host 'Connecting to the remote server...'
+    Write-Host (Get-Text 'ConnectingRemote')
     $session = New-SSHSession -ComputerName $serverIp -Credential $credential -AcceptKey -ConnectionTimeout 15
     if ($session -is [System.Array]) {
         $session = $session[0]
     }
 
-    Write-Host 'Running remote reachability checks...'
+    Write-Host (Get-Text 'RunningChecks')
     $probeResult = Invoke-SSHCommand -SSHSession $session -Command $probeCommand -TimeOut 120
     Show-RemoteResult -Result $probeResult
     if ($probeResult.ExitStatus -ne 0) {
-        throw 'The remote server cannot reach the selected upstream proxy.'
+        throw (Get-Text 'UpstreamUnreachable')
     }
 
     Write-Host ''
-    Write-Host 'Installing and configuring sing-box...'
+    Write-Host (Get-Text 'InstallingConfiguring')
     $setupResult = Invoke-RemoteRootScript -Session $session -SudoPassword $sshPasswordPlain -ScriptContent $setupScript
     Show-RemoteResult -Result $setupResult
     if ($setupResult.ExitStatus -ne 0) {
-        throw 'Remote installation/configuration failed.'
+        throw (Get-Text 'RemoteInstallFailed')
     }
 
     Write-Host ''
-    Write-Host 'Verifying service status and routing...'
+    Write-Host (Get-Text 'VerifyingStatus')
     $verifyResult = Invoke-SSHCommand -SSHSession $session -Command $verifyCommand -TimeOut 120
     Show-RemoteResult -Result $verifyResult
     if ($verifyResult.ExitStatus -ne 0) {
-        throw 'Verification failed after deployment.'
+        throw (Get-Text 'VerificationFailed')
     }
 
     Write-Host ''
-    Write-Host 'Deployment completed successfully.'
+    Write-Host (Get-Text 'DeploymentSuccess')
 }
 finally {
     if ($session) {

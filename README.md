@@ -1,58 +1,138 @@
-# sing-box transparent proxy deployer
+﻿# sing-box 透明代理部署脚本
 
-Reusable PowerShell deployer for Ubuntu servers.
+面向 Ubuntu 服务器的可复用 PowerShell 部署脚本。
 
-Files:
+## 项目文件
 
-- `deploy-singbox-transparent.ps1`: main interactive deploy script
-- `bootstrap.ps1`: lightweight online launcher
+- `deploy-singbox-transparent.ps1`：主交互式部署脚本
+- `bootstrap.ps1`：在线引导脚本
 
-Supported modes:
+## 支持模式
 
 - `SOCKS5`
 - `VLESS`
 
-What it does:
+## 功能说明
 
-- Prompts for the Ubuntu server IPv4 address, SSH username, SSH password, and proxy mode.
-- In `SOCKS5` mode, prompts for SOCKS5 server and port.
-- In `VLESS` mode, supports either a full `vless://...` URI or manual entry.
-- In `VLESS` mode, supports a single VLESS node with `none/tls/reality` and `none/ws/grpc/httpupgrade`.
-- Choice prompts use numeric selection (`1`, `2`, `3`...) so you do not need to type the full option text.
-- Connects to the server over SSH with `Posh-SSH`.
-- Installs or updates `sing-box` using the official installer.
-- Writes a `TUN + auto_route + auto_redirect` transparent proxy config.
-- Bypasses LAN/private ranges, loopback, link-local, and multicast.
-- Enables `sing-box` at boot and verifies the service.
+- 交互输入 Ubuntu 服务器 IPv4、SSH 用户名、SSH 密码、代理模式
+- `SOCKS5` 模式支持输入 SOCKS5 服务器和端口
+- `VLESS` 模式支持直接粘贴 `vless://...` 链接，或手动输入单节点参数
+- `VLESS` 模式支持 `none/tls/reality` 和 `none/ws/grpc/httpupgrade`
+- 所有菜单均支持数字选择，例如 `1`、`2`、`3`
+- 自动通过 SSH 连接远端服务器
+- 自动安装或更新 `sing-box`
+- 自动写入 `TUN + auto_route + auto_redirect` 透明代理配置
+- 自动绕过局域网/私网、回环、链路本地、多播地址
+- 自动设置开机自启并完成连通性验证
 
-Run locally:
+## 语言
+
+- 默认中文
+- 如需英文界面，可在运行脚本时追加 `-Language en-US`
+
+## 本地运行
+
+默认中文：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\deploy-singbox-transparent.ps1
 ```
 
-Online one-command:
+英文界面：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy-singbox-transparent.ps1 -Language en-US
+```
+
+## 在线一键运行
+
+默认中文：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -Command "$u='https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/deploy-singbox-transparent.ps1';$p=Join-Path $env:TEMP 'deploy-singbox-transparent.ps1';Invoke-WebRequest -Uri $u -OutFile $p;& powershell -ExecutionPolicy Bypass -File $p"
 ```
 
-Bootstrap command:
+英文界面：
+
+```powershell
+powershell -ExecutionPolicy Bypass -Command "$u='https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/deploy-singbox-transparent.ps1';$p=Join-Path $env:TEMP 'deploy-singbox-transparent.ps1';Invoke-WebRequest -Uri $u -OutFile $p;& powershell -ExecutionPolicy Bypass -File $p -Language en-US"
+```
+
+## Bootstrap 引导命令
+
+默认中文：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -Command "$u='https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/bootstrap.ps1';$p=Join-Path $env:TEMP 'bootstrap.ps1';Invoke-WebRequest -Uri $u -OutFile $p;& powershell -ExecutionPolicy Bypass -File $p -ScriptUrl 'https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/deploy-singbox-transparent.ps1'"
 ```
 
-Assumptions:
+英文界面：
 
-- The remote host is Ubuntu with `systemd`, `sudo`, `bash`, `curl`, and `nft` available.
-- The SSH password is also valid for `sudo`.
-- In `SOCKS5` mode, the remote host can reach the SOCKS5 upstream.
-- In `VLESS` mode, the remote host can download the `sing-box` installer directly on the first run.
+```powershell
+powershell -ExecutionPolicy Bypass -Command "$u='https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/bootstrap.ps1';$p=Join-Path $env:TEMP 'bootstrap.ps1';Invoke-WebRequest -Uri $u -OutFile $p;& powershell -ExecutionPolicy Bypass -File $p -ScriptUrl 'https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/deploy-singbox-transparent.ps1' -Language en-US"
+```
 
-Notes:
+## 前提条件
 
-- `SOCKS5` mode uses the SOCKS proxy as the bootstrap path for installing `sing-box`.
-- `VLESS` mode is based on sing-box official outbound fields. If your node requires specific values like `flow=xtls-rprx-vision`, `server_name`, `uTLS fingerprint`, `Reality public_key`, `short_id`, or transport fields, enter them exactly as provided by your node.
-- When using a `vless://...` URI, the script extracts common fields such as `security`, `sni`, `fp`, `type`, `host`, `path`, `flow`, `pbk`, `sid`, and `serviceName`.
-- Public internet traffic is routed through the selected upstream proxy after deployment.
+- 远端系统为 Ubuntu，且具备 `systemd`、`sudo`、`bash`、`curl`、`nft`
+- SSH 密码同时可用于 `sudo`
+- `SOCKS5` 模式下，远端服务器需要能访问 SOCKS5 上游
+- `VLESS` 模式下，首次运行时远端服务器需要能直接下载 `sing-box` 安装脚本
+
+## 说明
+
+- `SOCKS5` 模式会使用 SOCKS5 作为安装阶段的引导代理
+- `VLESS` 模式按 sing-box 官方字段生成单节点配置
+- 使用 `vless://...` 时，脚本会自动提取常见字段，例如 `security`、`sni`、`fp`、`type`、`host`、`path`、`flow`、`pbk`、`sid`、`serviceName`
+- 部署完成后，公网流量将走所选上游代理
+
+<details>
+<summary>English</summary>
+
+## Files
+
+- `deploy-singbox-transparent.ps1`: main interactive deploy script
+- `bootstrap.ps1`: lightweight online launcher
+
+## Supported modes
+
+- `SOCKS5`
+- `VLESS`
+
+## Features
+
+- Prompts for Ubuntu server IPv4, SSH username, SSH password, and proxy mode
+- `SOCKS5` mode supports SOCKS5 server and port
+- `VLESS` mode supports either a `vless://...` URI or manual single-node input
+- `VLESS` mode supports `none/tls/reality` and `none/ws/grpc/httpupgrade`
+- All menus use numeric selection such as `1`, `2`, `3`
+- Connects to the remote host over SSH
+- Installs or updates `sing-box`
+- Writes a `TUN + auto_route + auto_redirect` transparent proxy config
+- Bypasses LAN/private, loopback, link-local, and multicast ranges
+- Enables the service at boot and verifies connectivity
+
+## Language
+
+- Default UI language is Chinese
+- Add `-Language en-US` to switch to English
+
+## Local run
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy-singbox-transparent.ps1 -Language en-US
+```
+
+## Online one-command
+
+```powershell
+powershell -ExecutionPolicy Bypass -Command "$u='https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/deploy-singbox-transparent.ps1';$p=Join-Path $env:TEMP 'deploy-singbox-transparent.ps1';Invoke-WebRequest -Uri $u -OutFile $p;& powershell -ExecutionPolicy Bypass -File $p -Language en-US"
+```
+
+## Bootstrap command
+
+```powershell
+powershell -ExecutionPolicy Bypass -Command "$u='https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/bootstrap.ps1';$p=Join-Path $env:TEMP 'bootstrap.ps1';Invoke-WebRequest -Uri $u -OutFile $p;& powershell -ExecutionPolicy Bypass -File $p -ScriptUrl 'https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/deploy-singbox-transparent.ps1' -Language en-US"
+```
+
+</details>
