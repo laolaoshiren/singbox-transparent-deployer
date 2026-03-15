@@ -122,6 +122,7 @@ $script:Messages = @{
         VlessNoBootstrap1        = '注意：VLESS / VMess 模式不会通过节点为安装过程引导下载。'
         VlessNoBootstrap2        = '首次运行时，远端服务器需要能直接访问 sing-box 官方安装源。'
         ConnectingRemote         = '正在连接远端服务器...'
+        SshRetryWarning          = 'SSH 第 {0}/{1} 次连接失败：{2}。正在重试...'
         RunningChecks            = '正在执行远端连通性检查...'
         UpstreamUnreachable      = '远端服务器无法连通所选上游代理。'
         InstallingConfiguring    = '正在安装并配置 sing-box...'
@@ -199,6 +200,7 @@ $script:Messages = @{
         VlessNoBootstrap1        = 'Note: VLESS / VMess mode does not bootstrap package downloads through the node.'
         VlessNoBootstrap2        = 'On the first run, the remote server must be able to reach the official sing-box install source directly.'
         ConnectingRemote         = 'Connecting to the remote server...'
+        SshRetryWarning          = 'SSH attempt {0}/{1} failed: {2}. Retrying...'
         RunningChecks            = 'Running remote reachability checks...'
         UpstreamUnreachable      = 'The remote server cannot reach the selected upstream proxy.'
         InstallingConfiguring    = 'Installing and configuring sing-box...'
@@ -786,6 +788,38 @@ exit `$status
 "@
 
     return Invoke-SSHCommand -SSHSession $Session -Command $remoteCommand -TimeOut 600
+}
+
+function New-RobustSshSession {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ServerIp,
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]$Credential,
+        [int]$ConnectionTimeoutSeconds = 30,
+        [int]$MaxAttempts = 3
+    )
+
+    $lastError = $null
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        try {
+            $session = New-SSHSession -ComputerName $ServerIp -Credential $Credential -AcceptKey -ConnectionTimeout $ConnectionTimeoutSeconds
+            if ($session -is [System.Array]) {
+                return $session[0]
+            }
+
+            return $session
+        }
+        catch {
+            $lastError = $_
+            if ($attempt -lt $MaxAttempts) {
+                Write-Warning (Get-Text 'SshRetryWarning' $attempt $MaxAttempts $_.Exception.Message)
+                Start-Sleep -Seconds 2
+            }
+        }
+    }
+
+    throw $lastError
 }
 
 function New-BaseConfig {
@@ -1586,10 +1620,7 @@ $session = $null
 try {
     Write-Host ''
     Write-Host (Get-Text 'ConnectingRemote')
-    $session = New-SSHSession -ComputerName $serverIp -Credential $credential -AcceptKey -ConnectionTimeout 15
-    if ($session -is [System.Array]) {
-        $session = $session[0]
-    }
+    $session = New-RobustSshSession -ServerIp $serverIp -Credential $credential
 
     Write-Host (Get-Text 'RunningChecks')
     $probeResult = Invoke-SSHCommand -SSHSession $session -Command $probeCommand -TimeOut 120

@@ -27,7 +27,7 @@ powershell -ExecutionPolicy Bypass -File .\deploy-singbox-transparent.ps1
 PowerShell：
 
 ```powershell
-iex (irm 'https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/bootstrap.ps1')
+powershell -ExecutionPolicy Bypass -Command "iex (irm 'https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/bootstrap.ps1')"
 ```
 
 CMD：
@@ -38,6 +38,7 @@ powershell -ExecutionPolicy Bypass -Command "iex (irm 'https://raw.githubusercon
 
 ## 说明
 
+- PowerShell 和 CMD 都统一通过新的 `powershell.exe` 进程启动，避免当前会话环境干扰 SSH 连接
 - 在线入口只使用 GitHub 官方 raw 地址
 - sing-box 安装阶段的网络环境处理在远端服务器上完成
 - `SOCKS5` 模式会把 SOCKS5 当成安装阶段引导代理
