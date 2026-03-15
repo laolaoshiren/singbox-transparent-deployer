@@ -70,7 +70,7 @@ $script:Messages = @{
         NoLabel                  = '否'
         EnterOneOrTwo            = '请输入 1 或 2。'
         ValidPortRange           = '请输入 1 到 65535 之间的有效端口。'
-        UriSchemeInvalid         = 'URI 协议必须是 vless:// 或 vmess://'
+        UriSchemeInvalid         = '链接协议必须是 vless://、vmess://、trojan://、ss://、hy2:// 或 hysteria2://'
         UriMissingUuid           = 'VLESS URI 缺少 UUID。'
         UriMissingServer         = 'VLESS URI 缺少服务器地址。'
         UriMissingPort           = 'VLESS URI 缺少有效端口。'
@@ -79,25 +79,34 @@ $script:Messages = @{
         VmessMissingServer       = 'VMess 链接缺少服务器地址。'
         VmessMissingPort         = 'VMess 链接缺少有效端口。'
         VmessMissingUuid         = 'VMess 链接缺少 UUID。'
+        TrojanMissingPassword    = 'Trojan 链接缺少密码。'
+        TrojanMissingServer      = 'Trojan 链接缺少服务器地址。'
+        TrojanMissingPort        = 'Trojan 链接缺少有效端口。'
+        ShadowsocksDecodeFailed  = 'Shadowsocks 链接解码失败。'
+        ShadowsocksMissingMethod = 'Shadowsocks 链接缺少加密方式。'
+        ShadowsocksMissingPassword = 'Shadowsocks 链接缺少密码。'
+        ShadowsocksMissingServer = 'Shadowsocks 链接缺少服务器地址。'
+        ShadowsocksMissingPort   = 'Shadowsocks 链接缺少有效端口。'
+        Hysteria2MissingPassword = 'Hysteria2 链接缺少密码。'
+        Hysteria2MissingServer   = 'Hysteria2 链接缺少服务器地址。'
+        Hysteria2MissingPort     = 'Hysteria2 链接缺少有效端口。'
         InstallPoshSsh           = '未检测到 Posh-SSH，正在为当前用户安装...'
         ServerIpPrompt           = 'Ubuntu 服务器 IPv4'
         InvalidServerIp          = '请输入有效的 IPv4 服务器地址。'
         SshUsernamePrompt        = 'SSH 用户名'
         SshPasswordPrompt        = 'SSH 密码（同时作为 sudo 密码）'
         ProxyModePrompt          = '代理模式'
-        VlessModeLabel           = 'VLESS / VMess'
+        LinkModeLabel            = '订阅连接'
         TrojanModeLabel          = 'Trojan'
         Hysteria2ModeLabel       = 'Hysteria2'
         ShadowsocksModeLabel     = 'Shadowsocks'
         SocksModeLabel           = 'SOCKS5'
         SocksServerPrompt        = 'SOCKS5 服务器'
         InvalidSocksServer       = '请输入有效的 SOCKS5 主机名或 IPv4 地址。'
+        InvalidNodeServer        = '请输入有效的节点主机名或 IPv4 地址。'
         SocksPortPrompt          = 'SOCKS5 端口'
-        VlessModeIntro           = 'VLESS 模式支持 direct/tls/reality，以及 none/ws/grpc/httpupgrade 传输，也支持直接粘贴 vmess:// 分享链接。'
-        VlessInputModePrompt     = 'VLESS 输入方式'
-        VlessInputUriLabel       = 'URI 链接（支持 vless:// / vmess://）'
-        VlessInputManualLabel    = '手动输入'
-        VlessUriPrompt           = 'VLESS / VMess URI'
+        LinkModeIntro            = '订阅连接模式支持直接粘贴 vless://、vmess://、trojan://、ss://、hy2:// 或 hysteria2:// 链接。'
+        LinkUriPrompt            = '订阅连接 / 节点链接'
         VlessServerPrompt        = 'VLESS 服务器'
         InvalidVlessServer       = '请输入有效的 VLESS 主机名或 IPv4 地址。'
         VlessPortPrompt          = 'VLESS 端口'
@@ -173,7 +182,7 @@ $script:Messages = @{
         NoLabel                  = 'No'
         EnterOneOrTwo            = 'Enter 1 or 2.'
         ValidPortRange           = 'Enter a valid port between 1 and 65535.'
-        UriSchemeInvalid         = 'The URI scheme must be vless:// or vmess://'
+        UriSchemeInvalid         = 'The link scheme must be vless://, vmess://, trojan://, ss://, hy2://, or hysteria2://'
         UriMissingUuid           = 'The VLESS URI is missing the UUID.'
         UriMissingServer         = 'The VLESS URI is missing the server address.'
         UriMissingPort           = 'The VLESS URI is missing a valid port.'
@@ -182,25 +191,34 @@ $script:Messages = @{
         VmessMissingServer       = 'The VMess share link is missing the server address.'
         VmessMissingPort         = 'The VMess share link is missing a valid port.'
         VmessMissingUuid         = 'The VMess share link is missing the UUID.'
+        TrojanMissingPassword    = 'The Trojan link is missing the password.'
+        TrojanMissingServer      = 'The Trojan link is missing the server address.'
+        TrojanMissingPort        = 'The Trojan link is missing a valid port.'
+        ShadowsocksDecodeFailed  = 'Failed to decode the Shadowsocks link.'
+        ShadowsocksMissingMethod = 'The Shadowsocks link is missing the method.'
+        ShadowsocksMissingPassword = 'The Shadowsocks link is missing the password.'
+        ShadowsocksMissingServer = 'The Shadowsocks link is missing the server address.'
+        ShadowsocksMissingPort   = 'The Shadowsocks link is missing a valid port.'
+        Hysteria2MissingPassword = 'The Hysteria2 link is missing the password.'
+        Hysteria2MissingServer   = 'The Hysteria2 link is missing the server address.'
+        Hysteria2MissingPort     = 'The Hysteria2 link is missing a valid port.'
         InstallPoshSsh           = 'Posh-SSH not found. Installing for the current user...'
         ServerIpPrompt           = 'Ubuntu server IPv4'
         InvalidServerIp          = 'Enter a valid IPv4 server address.'
         SshUsernamePrompt        = 'SSH username'
         SshPasswordPrompt        = 'SSH password (also used for sudo)'
         ProxyModePrompt          = 'Proxy mode'
-        VlessModeLabel           = 'VLESS / VMess'
+        LinkModeLabel            = 'Subscription link'
         TrojanModeLabel          = 'Trojan'
         Hysteria2ModeLabel       = 'Hysteria2'
         ShadowsocksModeLabel     = 'Shadowsocks'
         SocksModeLabel           = 'SOCKS5'
         SocksServerPrompt        = 'SOCKS5 server'
         InvalidSocksServer       = 'Enter a valid SOCKS5 hostname or IPv4 address.'
+        InvalidNodeServer        = 'Enter a valid node hostname or IPv4 address.'
         SocksPortPrompt          = 'SOCKS5 port'
-        VlessModeIntro           = 'VLESS mode supports direct/tls/reality and transport none/ws/grpc/httpupgrade, and also accepts vmess:// share links.'
-        VlessInputModePrompt     = 'VLESS input mode'
-        VlessInputUriLabel       = 'URI (vless:// / vmess://)'
-        VlessInputManualLabel    = 'manual'
-        VlessUriPrompt           = 'VLESS / VMess URI'
+        LinkModeIntro            = 'Subscription link mode accepts vless://, vmess://, trojan://, ss://, hy2://, and hysteria2:// links directly.'
+        LinkUriPrompt            = 'Subscription / node link'
         VlessServerPrompt        = 'VLESS server'
         InvalidVlessServer       = 'Enter a valid VLESS hostname or IPv4 address.'
         VlessPortPrompt          = 'VLESS port'
@@ -632,6 +650,54 @@ function ConvertFrom-Base64Text {
     }
 }
 
+function ConvertFrom-UrlEncodedBase64Text {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Value,
+        [Parameter(Mandatory = $true)]
+        [string]$ErrorKey
+    )
+
+    try {
+        return ConvertFrom-Base64Text -Value ([Uri]::UnescapeDataString($Value))
+    }
+    catch {
+        throw (Get-Text $ErrorKey)
+    }
+}
+
+function ConvertFrom-AuthorityHostPort {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Value,
+        [Parameter(Mandatory = $true)]
+        [string]$ServerErrorKey,
+        [Parameter(Mandatory = $true)]
+        [string]$PortErrorKey
+    )
+
+    if ($Value -notmatch '^(?<host>.+):(?<port>\d+)$') {
+        throw (Get-Text $PortErrorKey)
+    }
+
+    $hostName = $Matches['host'].Trim()
+    $portText = $Matches['port']
+    $port = 0
+
+    if ([string]::IsNullOrWhiteSpace($hostName)) {
+        throw (Get-Text $ServerErrorKey)
+    }
+
+    if (-not [int]::TryParse($portText, [ref]$port) -or $port -lt 1 -or $port -gt 65535) {
+        throw (Get-Text $PortErrorKey)
+    }
+
+    return @{
+        Host = $hostName
+        Port = $port
+    }
+}
+
 function ConvertFrom-VlessUri {
     param(
         [Parameter(Mandatory = $true)]
@@ -778,6 +844,177 @@ function ConvertFrom-VmessUri {
     }
 }
 
+function ConvertFrom-TrojanUri {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$UriString
+    )
+
+    $uri = [Uri]$UriString
+    if (-not $uri.Scheme.Equals('trojan', [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw (Get-Text 'UriSchemeInvalid')
+    }
+
+    if ([string]::IsNullOrWhiteSpace($uri.UserInfo)) {
+        throw (Get-Text 'TrojanMissingPassword')
+    }
+
+    if ([string]::IsNullOrWhiteSpace($uri.Host)) {
+        throw (Get-Text 'TrojanMissingServer')
+    }
+
+    if ($uri.Port -lt 1 -or $uri.Port -gt 65535) {
+        throw (Get-Text 'TrojanMissingPort')
+    }
+
+    $query = ConvertFrom-UriQuery -Query $uri.Query
+    $transport = Get-FirstNonEmptyValue -Values @($query['type'], 'none')
+    $path = ''
+    if ($query['path']) {
+        $path = [Uri]::UnescapeDataString($query['path'])
+    }
+
+    $serverName = Get-FirstNonEmptyValue -Values @($query['sni'], $query['serverName'])
+    if (-not $serverName -and -not (Test-Ipv4Address -Value $uri.Host)) {
+        $serverName = $uri.Host
+    }
+
+    return @{
+        NodeType             = 'TROJAN'
+        Server               = $uri.Host
+        Port                 = $uri.Port
+        Password             = [Uri]::UnescapeDataString($uri.UserInfo)
+        ServerName           = $serverName
+        Insecure             = (ConvertTo-BoolLike -Value (Get-FirstNonEmptyValue -Values @($query['insecure'], $query['allowInsecure'])))
+        UtlsFingerprint      = Get-FirstNonEmptyValue -Values @($query['fp'], $query['fingerprint'])
+        Transport            = $transport.ToLowerInvariant()
+        TransportHost        = Get-FirstNonEmptyValue -Values @($query['host'])
+        TransportPath        = $path
+        TransportServiceName = Get-FirstNonEmptyValue -Values @($query['serviceName'], $query['service_name'])
+    }
+}
+
+function ConvertFrom-ShadowsocksUri {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$UriString
+    )
+
+    $payload = $UriString.Trim().Substring(5)
+    $fragmentIndex = $payload.IndexOf('#')
+    if ($fragmentIndex -ge 0) {
+        $payload = $payload.Substring(0, $fragmentIndex)
+    }
+
+    $query = ''
+    $queryIndex = $payload.IndexOf('?')
+    if ($queryIndex -ge 0) {
+        $query = $payload.Substring($queryIndex + 1)
+        $payload = $payload.Substring(0, $queryIndex)
+    }
+
+    $decodedCreds = ''
+    $serverPort = ''
+
+    if ($payload -match '@') {
+        $atIndex = $payload.LastIndexOf('@')
+        $left = $payload.Substring(0, $atIndex)
+        $right = $payload.Substring($atIndex + 1)
+        if ($left.Contains(':')) {
+            $decodedCreds = [Uri]::UnescapeDataString($left)
+        }
+        else {
+            $decodedCreds = ConvertFrom-UrlEncodedBase64Text -Value $left -ErrorKey 'ShadowsocksDecodeFailed'
+        }
+        $serverPort = $right
+    }
+    else {
+        $decodedAll = ConvertFrom-UrlEncodedBase64Text -Value $payload -ErrorKey 'ShadowsocksDecodeFailed'
+        if ($decodedAll -notmatch '@') {
+            throw (Get-Text 'ShadowsocksDecodeFailed')
+        }
+        $atIndex = $decodedAll.LastIndexOf('@')
+        $decodedCreds = $decodedAll.Substring(0, $atIndex)
+        $serverPort = $decodedAll.Substring($atIndex + 1)
+    }
+
+    if ($decodedCreds -notmatch '^(?<method>[^:]+):(?<password>.+)$') {
+        throw (Get-Text 'ShadowsocksDecodeFailed')
+    }
+
+    $method = $Matches['method'].Trim()
+    $password = $Matches['password']
+    if ([string]::IsNullOrWhiteSpace($method)) {
+        throw (Get-Text 'ShadowsocksMissingMethod')
+    }
+
+    if ([string]::IsNullOrWhiteSpace($password)) {
+        throw (Get-Text 'ShadowsocksMissingPassword')
+    }
+
+    $hostPort = ConvertFrom-AuthorityHostPort -Value $serverPort -ServerErrorKey 'ShadowsocksMissingServer' -PortErrorKey 'ShadowsocksMissingPort'
+    $queryValues = ConvertFrom-UriQuery -Query $query
+
+    return @{
+        NodeType   = 'SHADOWSOCKS'
+        Server     = $hostPort.Host
+        Port       = $hostPort.Port
+        Method     = $method
+        Password   = $password
+        Plugin     = Get-FirstNonEmptyValue -Values @($queryValues['plugin'])
+        PluginOpts = Get-FirstNonEmptyValue -Values @($queryValues['plugin_opts'], $queryValues['plugin-opts'])
+    }
+}
+
+function ConvertFrom-Hysteria2Uri {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$UriString
+    )
+
+    $uri = [Uri]$UriString
+    if (-not ($uri.Scheme.Equals('hy2', [System.StringComparison]::OrdinalIgnoreCase) -or $uri.Scheme.Equals('hysteria2', [System.StringComparison]::OrdinalIgnoreCase))) {
+        throw (Get-Text 'UriSchemeInvalid')
+    }
+
+    if ([string]::IsNullOrWhiteSpace($uri.UserInfo)) {
+        throw (Get-Text 'Hysteria2MissingPassword')
+    }
+
+    if ([string]::IsNullOrWhiteSpace($uri.Host)) {
+        throw (Get-Text 'Hysteria2MissingServer')
+    }
+
+    if ($uri.Port -lt 1 -or $uri.Port -gt 65535) {
+        throw (Get-Text 'Hysteria2MissingPort')
+    }
+
+    $query = ConvertFrom-UriQuery -Query $uri.Query
+    $serverName = Get-FirstNonEmptyValue -Values @($query['sni'])
+    if (-not $serverName -and -not (Test-Ipv4Address -Value $uri.Host)) {
+        $serverName = $uri.Host
+    }
+
+    $upMbps = 0
+    [void][int]::TryParse((Get-FirstNonEmptyValue -Values @($query['up_mbps'], $query['upmbps'], $query['up'])), [ref]$upMbps)
+    $downMbps = 0
+    [void][int]::TryParse((Get-FirstNonEmptyValue -Values @($query['down_mbps'], $query['downmbps'], $query['down'])), [ref]$downMbps)
+
+    return @{
+        NodeType        = 'HYSTERIA2'
+        Server          = $uri.Host
+        Port            = $uri.Port
+        Password        = [Uri]::UnescapeDataString($uri.UserInfo)
+        ServerName      = $serverName
+        Insecure        = (ConvertTo-BoolLike -Value (Get-FirstNonEmptyValue -Values @($query['insecure'], $query['allowInsecure'])))
+        UtlsFingerprint = Get-FirstNonEmptyValue -Values @($query['fp'], $query['fingerprint'])
+        UpMbps          = $upMbps
+        DownMbps        = $downMbps
+        ObfsType        = Get-FirstNonEmptyValue -Values @($query['obfs'])
+        ObfsPassword    = Get-FirstNonEmptyValue -Values @($query['obfs-password'], $query['obfs_password'])
+    }
+}
+
 function ConvertFrom-ProxyUri {
     param(
         [Parameter(Mandatory = $true)]
@@ -791,6 +1028,18 @@ function ConvertFrom-ProxyUri {
 
     if ($trimmed -match '^(?i)vmess://') {
         return ConvertFrom-VmessUri -UriString $trimmed
+    }
+
+    if ($trimmed -match '^(?i)trojan://') {
+        return ConvertFrom-TrojanUri -UriString $trimmed
+    }
+
+    if ($trimmed -match '^(?i)ss://') {
+        return ConvertFrom-ShadowsocksUri -UriString $trimmed
+    }
+
+    if ($trimmed -match '^(?i)(hy2|hysteria2)://') {
+        return ConvertFrom-Hysteria2Uri -UriString $trimmed
     }
 
     throw (Get-Text 'UriSchemeInvalid')
@@ -1149,9 +1398,12 @@ function New-TrojanOutbound {
         password    = $Spec.Password
         tls         = @{
             enabled     = $true
-            server_name = $Spec.ServerName
             insecure    = $Spec.Insecure
         }
+    }
+
+    if ($Spec.ServerName) {
+        $outbound.tls.server_name = $Spec.ServerName
     }
 
     if (-not (Test-Ipv4Address -Value $Spec.Server)) {
@@ -1270,9 +1522,12 @@ function New-Hysteria2Outbound {
         password    = $Spec.Password
         tls         = @{
             enabled     = $true
-            server_name = $Spec.ServerName
             insecure    = $Spec.Insecure
         }
+    }
+
+    if ($Spec.ServerName) {
+        $outbound.tls.server_name = $Spec.ServerName
     }
 
     if (-not (Test-Ipv4Address -Value $Spec.Server)) {
@@ -1749,8 +2004,8 @@ $sshUser = Read-RequiredValue -Prompt (Get-Text 'SshUsernamePrompt')
 $sshPasswordSecure = Read-Host (Get-Text 'SshPasswordPrompt') -AsSecureString
 $sshPasswordPlain = Get-PlainTextFromSecureString -SecureString $sshPasswordSecure
 
-$mode = Read-ChoiceValue -Prompt (Get-Text 'ProxyModePrompt') -Choices @('VLESS', 'TROJAN', 'HYSTERIA2', 'SHADOWSOCKS', 'SOCKS5') -ChoiceLabels @((Get-Text 'VlessModeLabel'), (Get-Text 'TrojanModeLabel'), (Get-Text 'Hysteria2ModeLabel'), (Get-Text 'ShadowsocksModeLabel'), (Get-Text 'SocksModeLabel')) -Default 'VLESS'
-$configMode = $mode
+$mode = Read-ChoiceValue -Prompt (Get-Text 'ProxyModePrompt') -Choices @('URI', 'SOCKS5') -ChoiceLabels @((Get-Text 'LinkModeLabel'), (Get-Text 'SocksModeLabel')) -Default 'URI'
+$configMode = ''
 $proxySpec = @{}
 $bootstrapProxy = ''
 $probeCommand = ''
@@ -1771,17 +2026,16 @@ if ($mode -eq 'SOCKS5') {
     $bootstrapProxy = 'socks5h://{0}:{1}' -f $socksServer, $socksPort
     $probeCommand = New-SocksProbeCommand -Server $socksServer -Port $socksPort
     $verifyCommand = New-SocksVerifyCommand -Server $socksServer -Port $socksPort
+    $configMode = 'SOCKS5'
 }
-elseif ($mode -eq 'VLESS') {
+else {
     Write-Host ''
-    Write-Host (Get-Text 'VlessModeIntro')
-    $vlessInputMode = Read-ChoiceValue -Prompt (Get-Text 'VlessInputModePrompt') -Choices @('uri', 'manual') -ChoiceLabels @((Get-Text 'VlessInputUriLabel'), (Get-Text 'VlessInputManualLabel')) -Default 'uri'
-
-    if ($vlessInputMode -eq 'uri') {
+    Write-Host (Get-Text 'LinkModeIntro')
+    while ($true) {
         while ($true) {
             try {
-                $vlessUri = Read-RequiredValue -Prompt (Get-Text 'VlessUriPrompt')
-                $proxySpec = ConvertFrom-ProxyUri -UriString $vlessUri
+                $proxyUri = Read-RequiredValue -Prompt (Get-Text 'LinkUriPrompt')
+                $proxySpec = ConvertFrom-ProxyUri -UriString $proxyUri
                 $configMode = $proxySpec.NodeType
                 break
             }
@@ -1789,204 +2043,59 @@ elseif ($mode -eq 'VLESS') {
                 Write-Warning $_.Exception.Message
             }
         }
+        if (-not (Test-HostOrIpv4 -Value $proxySpec.Server)) {
+            throw (Get-Text 'InvalidNodeServer')
+        }
+
+        switch ($configMode) {
+            'VLESS' {
+                if (-not (Test-Uuid -Value $proxySpec.Uuid)) {
+                    throw (Get-Text 'VlessUuidInvalid')
+                }
+
+                if ($proxySpec.Security -notin @('none', 'tls', 'reality')) {
+                    throw (Get-Text 'VlessSecurityInvalid')
+                }
+
+                if ($proxySpec.Transport -notin @('none', 'ws', 'grpc', 'httpupgrade')) {
+                    throw (Get-Text 'VlessTransportInvalid')
+                }
+
+                if ($proxySpec.Security -ne 'none' -and [string]::IsNullOrWhiteSpace($proxySpec.ServerName)) {
+                    throw (Get-Text 'TlsServerNameRequired')
+                }
+
+                if ($proxySpec.Security -eq 'reality' -and [string]::IsNullOrWhiteSpace($proxySpec.RealityPublicKey)) {
+                    throw (Get-Text 'RealityPublicKeyRequired')
+                }
+            }
+            'VMESS' {
+                if (-not (Test-Uuid -Value $proxySpec.Uuid)) {
+                    throw (Get-Text 'VlessUuidInvalid')
+                }
+            }
+        }
+
+        if ($proxySpec.ContainsKey('Transport')) {
+            if ($proxySpec.Transport -notin @('none', 'ws', 'grpc', 'httpupgrade')) {
+                throw (Get-Text 'VlessTransportInvalid')
+            }
+
+            if ($proxySpec.Transport -eq 'ws' -and [string]::IsNullOrWhiteSpace($proxySpec.TransportPath)) {
+                $proxySpec.TransportPath = '/'
+            }
+        }
+        break
+    }
+
+    if ($configMode -eq 'HYSTERIA2') {
+        $probeCommand = New-Hysteria2ProbeCommand -Server $proxySpec.Server -Port $proxySpec.Port
+        $verifyCommand = New-Hysteria2VerifyCommand -Server $proxySpec.Server -Port $proxySpec.Port
     }
     else {
-        $vlessServer = Read-RequiredValue -Prompt (Get-Text 'VlessServerPrompt')
-        while (-not (Test-HostOrIpv4 -Value $vlessServer)) {
-            Write-Warning (Get-Text 'InvalidVlessServer')
-            $vlessServer = Read-RequiredValue -Prompt (Get-Text 'VlessServerPrompt')
-        }
-
-        $vlessPort = Read-Port -Prompt (Get-Text 'VlessPortPrompt')
-        $vlessUuid = Read-RequiredValue -Prompt (Get-Text 'VlessUuidPrompt')
-        while (-not (Test-Uuid -Value $vlessUuid)) {
-            Write-Warning (Get-Text 'InvalidUuid')
-            $vlessUuid = Read-RequiredValue -Prompt (Get-Text 'VlessUuidPrompt')
-        }
-
-        $vlessFlow = Read-OptionalValue -Prompt (Get-Text 'VlessFlowPrompt') -Default ''
-        $vlessSecurity = Read-ChoiceValue -Prompt (Get-Text 'VlessSecurityPrompt') -Choices @('none', 'tls', 'reality')
-        $vlessTransport = Read-ChoiceValue -Prompt (Get-Text 'VlessTransportPrompt') -Choices @('none', 'ws', 'grpc', 'httpupgrade') -Default 'none'
-
-        $proxySpec = @{
-            NodeType             = 'VLESS'
-            Server               = $vlessServer
-            Port                 = $vlessPort
-            Uuid                 = $vlessUuid
-            Flow                 = $vlessFlow
-            Security             = $vlessSecurity
-            Transport            = $vlessTransport
-            ServerName           = ''
-            Insecure             = $false
-            UtlsFingerprint      = ''
-            RealityPublicKey     = ''
-            RealityShortId       = ''
-            TransportHost        = ''
-            TransportPath        = ''
-            TransportServiceName = ''
-        }
-
-        if ($vlessSecurity -ne 'none') {
-            $proxySpec.ServerName = Read-RequiredValue -Prompt (Get-Text 'TlsServerNamePrompt')
-            $proxySpec.Insecure = Read-YesNo -Prompt (Get-Text 'AllowInsecurePrompt') -Default $false
-
-            $fingerprintDefault = if ($vlessSecurity -eq 'reality') { 'chrome' } else { '' }
-            $proxySpec.UtlsFingerprint = Read-OptionalValue -Prompt (Get-Text 'UtlsFingerprintPrompt') -Default $fingerprintDefault
-
-            if ($vlessSecurity -eq 'reality') {
-                $proxySpec.RealityPublicKey = Read-RequiredValue -Prompt (Get-Text 'RealityPublicKeyPrompt')
-                $proxySpec.RealityShortId = Read-OptionalValue -Prompt (Get-Text 'RealityShortIdPrompt') -Default ''
-            }
-        }
-
-        switch ($vlessTransport) {
-            'ws' {
-                $proxySpec.TransportPath = Read-OptionalValue -Prompt (Get-Text 'WsPathPrompt') -Default '/'
-                $proxySpec.TransportHost = Read-OptionalValue -Prompt (Get-Text 'WsHostPrompt') -Default ''
-            }
-            'grpc' {
-                $proxySpec.TransportServiceName = Read-RequiredValue -Prompt (Get-Text 'GrpcServicePrompt')
-            }
-            'httpupgrade' {
-                $proxySpec.TransportPath = Read-OptionalValue -Prompt (Get-Text 'HttpUpgradePathPrompt') -Default '/'
-                $proxySpec.TransportHost = Read-OptionalValue -Prompt (Get-Text 'HttpUpgradeHostPrompt') -Default ''
-            }
-        }
+        $probeCommand = New-VlessProbeCommand -Server $proxySpec.Server -Port $proxySpec.Port
+        $verifyCommand = New-VlessVerifyCommand -Server $proxySpec.Server -Port $proxySpec.Port
     }
-
-    if (-not (Test-HostOrIpv4 -Value $proxySpec.Server)) {
-        throw (Get-Text 'VlessServerInvalid')
-    }
-
-    if (-not (Test-Uuid -Value $proxySpec.Uuid)) {
-        throw (Get-Text 'VlessUuidInvalid')
-    }
-
-    if ($configMode -eq 'VLESS' -and $proxySpec.Security -notin @('none', 'tls', 'reality')) {
-        throw (Get-Text 'VlessSecurityInvalid')
-    }
-
-    if ($proxySpec.Transport -notin @('none', 'ws', 'grpc', 'httpupgrade')) {
-        throw (Get-Text 'VlessTransportInvalid')
-    }
-
-    if ($configMode -eq 'VLESS' -and $proxySpec.Security -ne 'none' -and [string]::IsNullOrWhiteSpace($proxySpec.ServerName)) {
-        throw (Get-Text 'TlsServerNameRequired')
-    }
-
-    if ($configMode -eq 'VLESS' -and $proxySpec.Security -eq 'reality' -and [string]::IsNullOrWhiteSpace($proxySpec.RealityPublicKey)) {
-        throw (Get-Text 'RealityPublicKeyRequired')
-    }
-
-    if ($proxySpec.Transport -eq 'ws' -and [string]::IsNullOrWhiteSpace($proxySpec.TransportPath)) {
-        $proxySpec.TransportPath = '/'
-    }
-
-    $probeCommand = New-VlessProbeCommand -Server $proxySpec.Server -Port $proxySpec.Port
-    $verifyCommand = New-VlessVerifyCommand -Server $proxySpec.Server -Port $proxySpec.Port
-
-    Write-Host ''
-    Write-Host (Get-Text 'VlessNoBootstrap1')
-    Write-Host (Get-Text 'VlessNoBootstrap2')
-}
-elseif ($mode -eq 'TROJAN') {
-    Write-Host ''
-    Write-Host (Get-Text 'TrojanModeIntro')
-
-    $trojanServer = Read-RequiredValue -Prompt (Get-Text 'TrojanServerPrompt')
-    while (-not (Test-HostOrIpv4 -Value $trojanServer)) {
-        Write-Warning (Get-Text 'InvalidTrojanServer')
-        $trojanServer = Read-RequiredValue -Prompt (Get-Text 'TrojanServerPrompt')
-    }
-
-    $trojanPort = Read-Port -Prompt (Get-Text 'TrojanPortPrompt')
-    $trojanTransport = Read-ChoiceValue -Prompt (Get-Text 'TransportPrompt') -Choices @('none', 'ws', 'grpc', 'httpupgrade') -Default 'none'
-    $proxySpec = @{
-        Server               = $trojanServer
-        Port                 = $trojanPort
-        Password             = Read-RequiredValue -Prompt (Get-Text 'TrojanPasswordPrompt')
-        ServerName           = Read-RequiredValue -Prompt (Get-Text 'TlsServerNamePrompt')
-        Insecure             = Read-YesNo -Prompt (Get-Text 'AllowInsecurePrompt') -Default $false
-        UtlsFingerprint      = Read-OptionalValue -Prompt (Get-Text 'UtlsFingerprintPrompt') -Default ''
-        Transport            = $trojanTransport
-        TransportHost        = ''
-        TransportPath        = ''
-        TransportServiceName = ''
-    }
-
-    switch ($trojanTransport) {
-        'ws' {
-            $proxySpec.TransportPath = Read-OptionalValue -Prompt (Get-Text 'WsPathPrompt') -Default '/'
-            $proxySpec.TransportHost = Read-OptionalValue -Prompt (Get-Text 'WsHostPrompt') -Default ''
-        }
-        'grpc' {
-            $proxySpec.TransportServiceName = Read-RequiredValue -Prompt (Get-Text 'GrpcServicePrompt')
-        }
-        'httpupgrade' {
-            $proxySpec.TransportPath = Read-OptionalValue -Prompt (Get-Text 'HttpUpgradePathPrompt') -Default '/'
-            $proxySpec.TransportHost = Read-OptionalValue -Prompt (Get-Text 'HttpUpgradeHostPrompt') -Default ''
-        }
-    }
-
-    $probeCommand = New-VlessProbeCommand -Server $proxySpec.Server -Port $proxySpec.Port
-    $verifyCommand = New-VlessVerifyCommand -Server $proxySpec.Server -Port $proxySpec.Port
-
-    Write-Host ''
-    Write-Host (Get-Text 'VlessNoBootstrap1')
-    Write-Host (Get-Text 'VlessNoBootstrap2')
-}
-elseif ($mode -eq 'HYSTERIA2') {
-    Write-Host ''
-    Write-Host (Get-Text 'Hysteria2ModeIntro')
-
-    $hy2Server = Read-RequiredValue -Prompt (Get-Text 'Hysteria2ServerPrompt')
-    while (-not (Test-HostOrIpv4 -Value $hy2Server)) {
-        Write-Warning (Get-Text 'InvalidHysteria2Server')
-        $hy2Server = Read-RequiredValue -Prompt (Get-Text 'Hysteria2ServerPrompt')
-    }
-
-    $proxySpec = @{
-        Server          = $hy2Server
-        Port            = Read-Port -Prompt (Get-Text 'Hysteria2PortPrompt')
-        Password        = Read-RequiredValue -Prompt (Get-Text 'Hysteria2PasswordPrompt')
-        ServerName      = Read-RequiredValue -Prompt (Get-Text 'TlsServerNamePrompt')
-        Insecure        = Read-YesNo -Prompt (Get-Text 'AllowInsecurePrompt') -Default $false
-        UtlsFingerprint = Read-OptionalValue -Prompt (Get-Text 'UtlsFingerprintPrompt') -Default ''
-        UpMbps          = Read-OptionalInt -Prompt (Get-Text 'Hysteria2UpMbpsPrompt') -Default 100
-        DownMbps        = Read-OptionalInt -Prompt (Get-Text 'Hysteria2DownMbpsPrompt') -Default 100
-        ObfsType        = Read-OptionalValue -Prompt (Get-Text 'Hysteria2ObfsTypePrompt') -Default ''
-        ObfsPassword    = ''
-    }
-
-    if ($proxySpec.ObfsType) {
-        $proxySpec.ObfsPassword = Read-RequiredValue -Prompt (Get-Text 'Hysteria2ObfsPasswordPrompt')
-    }
-
-    $probeCommand = New-Hysteria2ProbeCommand -Server $proxySpec.Server -Port $proxySpec.Port
-    $verifyCommand = New-Hysteria2VerifyCommand -Server $proxySpec.Server -Port $proxySpec.Port
-
-    Write-Host ''
-    Write-Host (Get-Text 'VlessNoBootstrap1')
-    Write-Host (Get-Text 'VlessNoBootstrap2')
-}
-elseif ($mode -eq 'SHADOWSOCKS') {
-    $ssServer = Read-RequiredValue -Prompt (Get-Text 'ShadowsocksServerPrompt')
-    while (-not (Test-HostOrIpv4 -Value $ssServer)) {
-        Write-Warning (Get-Text 'InvalidShadowsocksServer')
-        $ssServer = Read-RequiredValue -Prompt (Get-Text 'ShadowsocksServerPrompt')
-    }
-
-    $proxySpec = @{
-        Server     = $ssServer
-        Port       = Read-Port -Prompt (Get-Text 'ShadowsocksPortPrompt')
-        Method     = Read-RequiredValue -Prompt (Get-Text 'ShadowsocksMethodPrompt')
-        Password   = Read-RequiredValue -Prompt (Get-Text 'ShadowsocksPasswordPrompt')
-        Plugin     = Read-OptionalValue -Prompt (Get-Text 'ShadowsocksPluginPrompt') -Default ''
-        PluginOpts = Read-OptionalValue -Prompt (Get-Text 'ShadowsocksPluginOptsPrompt') -Default ''
-    }
-
-    $probeCommand = New-VlessProbeCommand -Server $proxySpec.Server -Port $proxySpec.Port
-    $verifyCommand = New-VlessVerifyCommand -Server $proxySpec.Server -Port $proxySpec.Port
 
     Write-Host ''
     Write-Host (Get-Text 'VlessNoBootstrap1')
