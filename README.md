@@ -27,18 +27,19 @@ powershell -ExecutionPolicy Bypass -File .\deploy-singbox-transparent.ps1
 PowerShell：
 
 ```powershell
-irm https://cdn.jsdelivr.net/gh/laolaoshiren/singbox-transparent-deployer@main/bootstrap.ps1 | iex
+iex (irm 'https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/bootstrap.ps1')
 ```
 
 CMD：
 
 ```cmd
-powershell -ExecutionPolicy Bypass -Command "irm https://cdn.jsdelivr.net/gh/laolaoshiren/singbox-transparent-deployer@main/bootstrap.ps1 | iex"
+powershell -ExecutionPolicy Bypass -Command "iex (irm 'https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/bootstrap.ps1')"
 ```
 
 ## 说明
 
-- 在线入口脚本会继续下载主部署脚本，并自动在 `raw.githubusercontent.com` 和 `jsDelivr` 之间回退
+- 在线入口只使用 GitHub 官方 raw 地址
+- sing-box 安装阶段的网络环境处理在远端服务器上完成
 - `SOCKS5` 模式会把 SOCKS5 当成安装阶段引导代理
 - `VLESS / VMess` 模式支持直接粘贴 `vless://...` 或 `vmess://...`
 - 首次安装时会优先尝试 sing-box 官方 APT 源；如果失败，再回退到官方安装脚本
