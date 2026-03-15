@@ -1,7 +1,6 @@
 ﻿[CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
-    [string]$ScriptUrl,
+    [string]$ScriptUrl = 'https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/deploy-singbox-transparent.ps1',
     [string]$Language = ''
 )
 

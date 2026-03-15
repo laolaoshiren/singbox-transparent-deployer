@@ -12,57 +12,33 @@
 
 ## 交互特点
 
-- 脚本启动第一步先选择语言：`中文` 或 `English`
+- 启动第一步先选择语言：`中文` 或 `English`
 - 代理模式默认选中 `VLESS / VMess`
 - 所有菜单都使用数字选择，例如 `1`、`2`
 
-## 本地运行（PowerShell）
+## 本地运行
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\deploy-singbox-transparent.ps1
 ```
 
-## 在线一键运行（PowerShell）
+## 在线一键运行
+
+PowerShell：
 
 ```powershell
-& {
-  [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-  $urls = @(
-    'https://raw.githubusercontent.com/laolaoshiren/singbox-transparent-deployer/main/deploy-singbox-transparent.ps1',
-    'https://cdn.jsdelivr.net/gh/laolaoshiren/singbox-transparent-deployer@main/deploy-singbox-transparent.ps1'
-  )
-  $target = Join-Path $env:TEMP 'deploy-singbox-transparent.ps1'
-  $downloaded = $false
+irm https://cdn.jsdelivr.net/gh/laolaoshiren/singbox-transparent-deployer@main/bootstrap.ps1 | iex
+```
 
-  foreach ($url in $urls) {
-    try {
-      Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $target
-      $downloaded = $true
-      break
-    }
-    catch {
-      try {
-        curl.exe -L --max-time 60 -o $target $url | Out-Null
-        if (Test-Path $target) {
-          $downloaded = $true
-          break
-        }
-      }
-      catch {
-      }
-    }
-  }
+CMD：
 
-  if (-not $downloaded) {
-    throw '无法下载部署脚本，请检查本机到 GitHub 或 jsDelivr 的 HTTPS 连通性。'
-  }
-
-  & powershell -ExecutionPolicy Bypass -File $target
-}
+```cmd
+powershell -ExecutionPolicy Bypass -Command "irm https://cdn.jsdelivr.net/gh/laolaoshiren/singbox-transparent-deployer@main/bootstrap.ps1 | iex"
 ```
 
 ## 说明
 
+- 在线入口脚本会继续下载主部署脚本，并自动在 `raw.githubusercontent.com` 和 `jsDelivr` 之间回退
 - `SOCKS5` 模式会把 SOCKS5 当成安装阶段引导代理
 - `VLESS / VMess` 模式支持直接粘贴 `vless://...` 或 `vmess://...`
 - 首次安装时会优先尝试 sing-box 官方 APT 源；如果失败，再回退到官方安装脚本
