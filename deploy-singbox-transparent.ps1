@@ -130,10 +130,14 @@ $script:Messages = @{
         InstallAttemptApt        = '正在尝试 sing-box 官方 APT 源...'
         InstallAttemptScript     = '正在尝试 sing-box 官方安装脚本...'
         InstallAptFailed         = '官方 APT 源安装失败，回退到安装脚本。'
+        InstallSkipped           = '检测到 sing-box 已安装，跳过安装步骤，只更新配置。'
         RemoteInstallFailed      = '远端安装或配置失败。'
         VerifyingStatus          = '正在验证服务状态和路由结果...'
         VerificationFailed       = '部署后的验证失败。'
         DeploymentSuccess        = '部署完成。'
+        VerificationWarning      = '警告：部分诊断项目未返回结果，但 sing-box 服务已启动。'
+        UpstreamEndpointLabel    = '上游节点'
+        PublicIpUnavailable      = '未获取到公网出口 IP'
     }
     'en-US' = @{
         DefaultTag               = 'default'
@@ -203,10 +207,14 @@ $script:Messages = @{
         InstallAttemptApt        = 'Trying the official sing-box APT repository...'
         InstallAttemptScript     = 'Trying the official sing-box install script...'
         InstallAptFailed         = 'The official APT repository failed. Falling back to the install script.'
+        InstallSkipped           = 'sing-box is already installed. Skipping package installation and updating the config only.'
         RemoteInstallFailed      = 'Remote installation/configuration failed.'
         VerifyingStatus          = 'Verifying service status and routing...'
         VerificationFailed       = 'Verification failed after deployment.'
         DeploymentSuccess        = 'Deployment completed successfully.'
+        VerificationWarning      = 'Warning: some diagnostic checks returned no data, but the sing-box service is running.'
+        UpstreamEndpointLabel    = 'Upstream endpoint'
+        PublicIpUnavailable      = 'Public egress IP not available'
     }
 }
 
@@ -1144,6 +1152,10 @@ function New-SingBoxConfig {
                 tag  = 'block'
             }
         )
+
+        if (Test-Ipv4Address -Value $ProxySpec.Server) {
+            $additionalCidrs += Get-IpCidr -IpAddress $ProxySpec.Server
+        }
     }
     else {
         $config.outbounds = @(
@@ -1157,6 +1169,10 @@ function New-SingBoxConfig {
                 tag  = 'block'
             }
         )
+
+        if (Test-Ipv4Address -Value $ProxySpec.Server) {
+            $additionalCidrs += Get-IpCidr -IpAddress $ProxySpec.Server
+        }
     }
 
     $config.route = New-RouteConfig -AdditionalCidrs $additionalCidrs
@@ -1209,6 +1225,10 @@ ensure_bootstrap_packages() {
   fi
 }
 
+is_singbox_installed() {
+  command -v sing-box >/dev/null 2>&1
+}
+
 install_from_apt_repo() {
   echo "__INSTALL_ATTEMPT_APT__"
   ensure_bootstrap_packages
@@ -1242,12 +1262,18 @@ if [ -n "$BOOTSTRAP_PROXY" ]; then
   export http_proxy="$BOOTSTRAP_PROXY"
 fi
 
-if [ -n "$BOOTSTRAP_PROXY" ]; then
-  install_from_script
+ensure_bootstrap_packages
+
+if is_singbox_installed; then
+  echo "__INSTALL_SKIPPED__"
 else
-  if ! install_from_apt_repo; then
-    echo "__INSTALL_APT_FAILED__"
+  if [ -n "$BOOTSTRAP_PROXY" ]; then
     install_from_script
+  else
+    if ! install_from_apt_repo; then
+      echo "__INSTALL_APT_FAILED__"
+      install_from_script
+    fi
   fi
 fi
 
@@ -1269,7 +1295,7 @@ systemctl is-enabled sing-box >/dev/null
 systemctl is-active sing-box >/dev/null
 '@
 
-    return $script.Replace('__BOOTSTRAP_BASE64__', $bootstrapBase64).Replace('__CONFIG_BASE64__', $configBase64).Replace('__INSTALL_STRATEGY__', $installStrategyMessage).Replace('__INSTALL_ATTEMPT_APT__', (Get-Text 'InstallAttemptApt')).Replace('__INSTALL_ATTEMPT_SCRIPT__', (Get-Text 'InstallAttemptScript')).Replace('__INSTALL_APT_FAILED__', (Get-Text 'InstallAptFailed'))
+    return $script.Replace('__BOOTSTRAP_BASE64__', $bootstrapBase64).Replace('__CONFIG_BASE64__', $configBase64).Replace('__INSTALL_STRATEGY__', $installStrategyMessage).Replace('__INSTALL_ATTEMPT_APT__', (Get-Text 'InstallAttemptApt')).Replace('__INSTALL_ATTEMPT_SCRIPT__', (Get-Text 'InstallAttemptScript')).Replace('__INSTALL_APT_FAILED__', (Get-Text 'InstallAptFailed')).Replace('__INSTALL_SKIPPED__', (Get-Text 'InstallSkipped'))
 }
 
 function New-SocksProbeCommand {
@@ -1326,7 +1352,7 @@ function New-SocksVerifyCommand {
         [int]$Port
     )
 
-    return @"
+    $command = @'
 set -euo pipefail
 echo '=== ENABLED ==='
 systemctl is-enabled sing-box
@@ -1334,15 +1360,28 @@ echo
 echo '=== ACTIVE ==='
 systemctl is-active sing-box
 echo
+echo '=== UPSTREAM ENDPOINT ==='
+echo '__SERVER__:__PORT__'
+echo
 echo '=== EGRESS IP ==='
-curl -4 -s --max-time 20 https://api.ipify.org || true
+PUBLIC_IP="$(curl -4 -s --max-time 10 https://api.ipify.org || true)"
+if [ -z "$PUBLIC_IP" ]; then
+  PUBLIC_IP="$(curl -4 -s --max-time 10 https://ipv4.icanhazip.com || true)"
+fi
+if [ -z "$PUBLIC_IP" ]; then
+  echo '__PUBLIC_IP_UNAVAILABLE__'
+else
+  printf '%s\n' "$PUBLIC_IP" | tr -d '\r'
+fi
 echo
 echo '=== SOCKS SERVER DIRECT ==='
-(timeout 5 bash -lc 'cat < /dev/null > /dev/tcp/$Server/$Port' && echo OK) || { echo FAIL; exit 1; }
+(timeout 5 bash -lc 'cat < /dev/null > /dev/tcp/__SERVER__/__PORT__' && echo OK) || echo FAIL
 echo
 echo '=== CONFIG PATH ==='
 echo /etc/sing-box/config.json
-"@
+'@
+
+    return $command.Replace('__PUBLIC_IP_UNAVAILABLE__', (Get-Text 'PublicIpUnavailable')).Replace('__SERVER__', $Server).Replace('__PORT__', [string]$Port)
 }
 
 function New-VlessVerifyCommand {
@@ -1353,7 +1392,7 @@ function New-VlessVerifyCommand {
         [int]$Port
     )
 
-    return @"
+    $command = @'
 set -euo pipefail
 echo '=== ENABLED ==='
 systemctl is-enabled sing-box
@@ -1361,15 +1400,28 @@ echo
 echo '=== ACTIVE ==='
 systemctl is-active sing-box
 echo
+echo '=== UPSTREAM ENDPOINT ==='
+echo '__SERVER__:__PORT__'
+echo
 echo '=== EGRESS IP ==='
-curl -4 -s --max-time 20 https://api.ipify.org || true
+PUBLIC_IP="$(curl -4 -s --max-time 10 https://api.ipify.org || true)"
+if [ -z "$PUBLIC_IP" ]; then
+  PUBLIC_IP="$(curl -4 -s --max-time 10 https://ipv4.icanhazip.com || true)"
+fi
+if [ -z "$PUBLIC_IP" ]; then
+  echo '__PUBLIC_IP_UNAVAILABLE__'
+else
+  printf '%s\n' "$PUBLIC_IP" | tr -d '\r'
+fi
 echo
 echo '=== UPSTREAM TCP ==='
-(timeout 5 bash -lc 'cat < /dev/null > /dev/tcp/$Server/$Port' && echo OK) || { echo FAIL; exit 1; }
+(timeout 5 bash -lc 'cat < /dev/null > /dev/tcp/__SERVER__/__PORT__' && echo OK) || echo FAIL
 echo
 echo '=== CONFIG PATH ==='
 echo /etc/sing-box/config.json
-"@
+'@
+
+    return $command.Replace('__PUBLIC_IP_UNAVAILABLE__', (Get-Text 'PublicIpUnavailable')).Replace('__SERVER__', $Server).Replace('__PORT__', [string]$Port)
 }
 
 Ensure-PoshSsh
@@ -1564,6 +1616,7 @@ try {
 
     Write-Host ''
     Write-Host (Get-Text 'DeploymentSuccess')
+    Write-Host ('{0}: {1}:{2}' -f (Get-Text 'UpstreamEndpointLabel'), $proxySpec.Server, $proxySpec.Port)
 }
 finally {
     if ($session) {
