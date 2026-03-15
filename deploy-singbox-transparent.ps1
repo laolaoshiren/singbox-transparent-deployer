@@ -86,6 +86,9 @@ $script:Messages = @{
         SshPasswordPrompt        = 'SSH 密码（同时作为 sudo 密码）'
         ProxyModePrompt          = '代理模式'
         VlessModeLabel           = 'VLESS / VMess'
+        TrojanModeLabel          = 'Trojan'
+        Hysteria2ModeLabel       = 'Hysteria2'
+        ShadowsocksModeLabel     = 'Shadowsocks'
         SocksModeLabel           = 'SOCKS5'
         SocksServerPrompt        = 'SOCKS5 服务器'
         InvalidSocksServer       = '请输入有效的 SOCKS5 主机名或 IPv4 地址。'
@@ -113,13 +116,35 @@ $script:Messages = @{
         GrpcServicePrompt        = 'gRPC service_name'
         HttpUpgradePathPrompt    = 'HTTPUpgrade 路径'
         HttpUpgradeHostPrompt    = 'HTTPUpgrade host（留空表示不设置）'
+        TrojanServerPrompt       = 'Trojan 服务器'
+        InvalidTrojanServer      = '请输入有效的 Trojan 主机名或 IPv4 地址。'
+        TrojanPortPrompt         = 'Trojan 端口'
+        TrojanPasswordPrompt     = 'Trojan 密码'
+        TrojanModeIntro          = 'Trojan 模式支持 TLS，以及 none/ws/grpc/httpupgrade 传输。'
+        TransportPrompt          = '传输类型'
+        ShadowsocksServerPrompt  = 'Shadowsocks 服务器'
+        InvalidShadowsocksServer = '请输入有效的 Shadowsocks 主机名或 IPv4 地址。'
+        ShadowsocksPortPrompt    = 'Shadowsocks 端口'
+        ShadowsocksMethodPrompt  = 'Shadowsocks 加密方式'
+        ShadowsocksPasswordPrompt = 'Shadowsocks 密码'
+        ShadowsocksPluginPrompt  = 'Shadowsocks plugin（留空表示无）'
+        ShadowsocksPluginOptsPrompt = 'Shadowsocks plugin_opts（留空表示无）'
+        Hysteria2ServerPrompt    = 'Hysteria2 服务器'
+        InvalidHysteria2Server   = '请输入有效的 Hysteria2 主机名或 IPv4 地址。'
+        Hysteria2PortPrompt      = 'Hysteria2 端口'
+        Hysteria2PasswordPrompt  = 'Hysteria2 密码'
+        Hysteria2ModeIntro       = 'Hysteria2 模式需要 TLS，可选 salamander 混淆。'
+        Hysteria2UpMbpsPrompt    = 'Hysteria2 up_mbps（留空表示不设置）'
+        Hysteria2DownMbpsPrompt  = 'Hysteria2 down_mbps（留空表示不设置）'
+        Hysteria2ObfsTypePrompt  = 'Hysteria2 obfs.type（留空表示无；支持 salamander）'
+        Hysteria2ObfsPasswordPrompt = 'Hysteria2 obfs.password'
         VlessServerInvalid       = 'VLESS 服务器必须是主机名或 IPv4 地址。'
         VlessUuidInvalid         = 'VLESS UUID 无效。'
         VlessSecurityInvalid     = 'VLESS 安全类型必须是 none、tls 或 reality。'
         VlessTransportInvalid    = 'VLESS 传输类型必须是 none、ws、grpc 或 httpupgrade。'
         TlsServerNameRequired    = 'TLS 或 Reality 模式必须提供 server_name / SNI。'
         RealityPublicKeyRequired = 'Reality 模式必须提供 public_key。'
-        VlessNoBootstrap1        = '注意：VLESS / VMess 模式不会通过节点为安装过程引导下载。'
+        VlessNoBootstrap1        = '注意：当前节点模式不会通过节点为安装过程引导下载。'
         VlessNoBootstrap2        = '首次运行时，远端服务器需要能直接访问 sing-box 官方安装源。'
         ConnectingRemote         = '正在连接远端服务器...'
         SshRetryWarning          = 'SSH 第 {0}/{1} 次连接失败：{2}。正在重试...'
@@ -164,6 +189,9 @@ $script:Messages = @{
         SshPasswordPrompt        = 'SSH password (also used for sudo)'
         ProxyModePrompt          = 'Proxy mode'
         VlessModeLabel           = 'VLESS / VMess'
+        TrojanModeLabel          = 'Trojan'
+        Hysteria2ModeLabel       = 'Hysteria2'
+        ShadowsocksModeLabel     = 'Shadowsocks'
         SocksModeLabel           = 'SOCKS5'
         SocksServerPrompt        = 'SOCKS5 server'
         InvalidSocksServer       = 'Enter a valid SOCKS5 hostname or IPv4 address.'
@@ -191,13 +219,35 @@ $script:Messages = @{
         GrpcServicePrompt        = 'gRPC service_name'
         HttpUpgradePathPrompt    = 'HTTPUpgrade path'
         HttpUpgradeHostPrompt    = 'HTTPUpgrade host (blank if none)'
+        TrojanServerPrompt       = 'Trojan server'
+        InvalidTrojanServer      = 'Enter a valid Trojan hostname or IPv4 address.'
+        TrojanPortPrompt         = 'Trojan port'
+        TrojanPasswordPrompt     = 'Trojan password'
+        TrojanModeIntro          = 'Trojan mode supports TLS and transport none/ws/grpc/httpupgrade.'
+        TransportPrompt          = 'Transport'
+        ShadowsocksServerPrompt  = 'Shadowsocks server'
+        InvalidShadowsocksServer = 'Enter a valid Shadowsocks hostname or IPv4 address.'
+        ShadowsocksPortPrompt    = 'Shadowsocks port'
+        ShadowsocksMethodPrompt  = 'Shadowsocks method'
+        ShadowsocksPasswordPrompt = 'Shadowsocks password'
+        ShadowsocksPluginPrompt  = 'Shadowsocks plugin (blank if none)'
+        ShadowsocksPluginOptsPrompt = 'Shadowsocks plugin_opts (blank if none)'
+        Hysteria2ServerPrompt    = 'Hysteria2 server'
+        InvalidHysteria2Server   = 'Enter a valid Hysteria2 hostname or IPv4 address.'
+        Hysteria2PortPrompt      = 'Hysteria2 port'
+        Hysteria2PasswordPrompt  = 'Hysteria2 password'
+        Hysteria2ModeIntro       = 'Hysteria2 mode requires TLS and optionally supports salamander obfs.'
+        Hysteria2UpMbpsPrompt    = 'Hysteria2 up_mbps (blank if unset)'
+        Hysteria2DownMbpsPrompt  = 'Hysteria2 down_mbps (blank if unset)'
+        Hysteria2ObfsTypePrompt  = 'Hysteria2 obfs.type (blank if none; salamander supported)'
+        Hysteria2ObfsPasswordPrompt = 'Hysteria2 obfs.password'
         VlessServerInvalid       = 'The VLESS server must be a hostname or IPv4 address.'
         VlessUuidInvalid         = 'The VLESS UUID is invalid.'
         VlessSecurityInvalid     = 'The VLESS security value must be none, tls, or reality.'
         VlessTransportInvalid    = 'The VLESS transport value must be none, ws, grpc, or httpupgrade.'
         TlsServerNameRequired    = 'TLS or Reality mode requires server_name / SNI.'
         RealityPublicKeyRequired = 'Reality mode requires public_key.'
-        VlessNoBootstrap1        = 'Note: VLESS / VMess mode does not bootstrap package downloads through the node.'
+        VlessNoBootstrap1        = 'Note: the current node mode does not bootstrap package downloads through the node.'
         VlessNoBootstrap2        = 'On the first run, the remote server must be able to reach the official sing-box install source directly.'
         ConnectingRemote         = 'Connecting to the remote server...'
         SshRetryWarning          = 'SSH attempt {0}/{1} failed: {2}. Retrying...'
@@ -378,6 +428,30 @@ function Read-Port {
         $port = 0
         if ([int]::TryParse($inputValue, [ref]$port) -and $port -ge 1 -and $port -le 65535) {
             return $port
+        }
+
+        Write-Warning (Get-Text 'ValidPortRange')
+    }
+}
+
+function Read-OptionalInt {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Prompt,
+        [int]$Default = 0,
+        [int]$Minimum = 0
+    )
+
+    while ($true) {
+        $defaultText = if ($Default -gt 0) { [string]$Default } else { '' }
+        $inputValue = Read-OptionalValue -Prompt $Prompt -Default $defaultText
+        if ([string]::IsNullOrWhiteSpace($inputValue)) {
+            return 0
+        }
+
+        $number = 0
+        if ([int]::TryParse($inputValue, [ref]$number) -and $number -ge $Minimum) {
+            return $number
         }
 
         Write-Warning (Get-Text 'ValidPortRange')
@@ -946,6 +1020,61 @@ function New-SocksOutbound {
     return $outbound
 }
 
+function Add-TransportToOutbound {
+    param(
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Outbound,
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Spec
+    )
+
+    switch ($Spec.Transport) {
+        'ws' {
+            $transport = @{
+                type = 'ws'
+            }
+
+            if ($Spec.TransportPath) {
+                $transport.path = $Spec.TransportPath
+            }
+
+            if ($Spec.TransportHost) {
+                $transport.headers = @{
+                    Host = $Spec.TransportHost
+                }
+            }
+
+            $Outbound.transport = $transport
+        }
+        'grpc' {
+            $transport = @{
+                type = 'grpc'
+            }
+
+            if ($Spec.TransportServiceName) {
+                $transport.service_name = $Spec.TransportServiceName
+            }
+
+            $Outbound.transport = $transport
+        }
+        'httpupgrade' {
+            $transport = @{
+                type = 'httpupgrade'
+            }
+
+            if ($Spec.TransportHost) {
+                $transport.host = $Spec.TransportHost
+            }
+
+            if ($Spec.TransportPath) {
+                $transport.path = $Spec.TransportPath
+            }
+
+            $Outbound.transport = $transport
+        }
+    }
+}
+
 function New-VlessOutbound {
     param(
         [Parameter(Mandatory = $true)]
@@ -1001,52 +1130,45 @@ function New-VlessOutbound {
         $outbound.tls = $tls
     }
 
-    switch ($Spec.Transport) {
-        'ws' {
-            $transport = @{
-                type = 'ws'
-            }
+    Add-TransportToOutbound -Outbound $outbound -Spec $Spec
 
-            if ($Spec.TransportPath) {
-                $transport.path = $Spec.TransportPath
-            }
+    return $outbound
+}
 
-            if ($Spec.TransportHost) {
-                $transport.headers = @{
-                    Host = $Spec.TransportHost
-                }
-            }
+function New-TrojanOutbound {
+    param(
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Spec
+    )
 
-            $outbound.transport = $transport
-        }
-        'grpc' {
-            $transport = @{
-                type = 'grpc'
-            }
-
-            if ($Spec.TransportServiceName) {
-                $transport.service_name = $Spec.TransportServiceName
-            }
-
-            $outbound.transport = $transport
-        }
-        'httpupgrade' {
-            $transport = @{
-                type = 'httpupgrade'
-            }
-
-            if ($Spec.TransportHost) {
-                $transport.host = $Spec.TransportHost
-            }
-
-            if ($Spec.TransportPath) {
-                $transport.path = $Spec.TransportPath
-            }
-
-            $outbound.transport = $transport
+    $outbound = @{
+        type        = 'trojan'
+        tag         = 'proxy'
+        server      = $Spec.Server
+        server_port = $Spec.Port
+        password    = $Spec.Password
+        tls         = @{
+            enabled     = $true
+            server_name = $Spec.ServerName
+            insecure    = $Spec.Insecure
         }
     }
 
+    if (-not (Test-Ipv4Address -Value $Spec.Server)) {
+        $outbound.domain_resolver = @{
+            server   = 'local'
+            strategy = 'prefer_ipv4'
+        }
+    }
+
+    if ($Spec.UtlsFingerprint) {
+        $outbound.tls.utls = @{
+            enabled     = $true
+            fingerprint = $Spec.UtlsFingerprint
+        }
+    }
+
+    Add-TransportToOutbound -Outbound $outbound -Spec $Spec
     return $outbound
 }
 
@@ -1096,49 +1218,92 @@ function New-VmessOutbound {
         $outbound.tls = $tls
     }
 
-    switch ($Spec.Transport) {
-        'ws' {
-            $transport = @{
-                type = 'ws'
-            }
+    Add-TransportToOutbound -Outbound $outbound -Spec $Spec
 
-            if ($Spec.TransportPath) {
-                $transport.path = $Spec.TransportPath
-            }
+    return $outbound
+}
 
-            if ($Spec.TransportHost) {
-                $transport.headers = @{
-                    Host = $Spec.TransportHost
-                }
-            }
+function New-ShadowsocksOutbound {
+    param(
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Spec
+    )
 
-            $outbound.transport = $transport
+    $outbound = @{
+        type        = 'shadowsocks'
+        tag         = 'proxy'
+        server      = $Spec.Server
+        server_port = $Spec.Port
+        method      = $Spec.Method
+        password    = $Spec.Password
+    }
+
+    if (-not (Test-Ipv4Address -Value $Spec.Server)) {
+        $outbound.domain_resolver = @{
+            server   = 'local'
+            strategy = 'prefer_ipv4'
         }
-        'grpc' {
-            $transport = @{
-                type = 'grpc'
-            }
+    }
 
-            if ($Spec.TransportServiceName) {
-                $transport.service_name = $Spec.TransportServiceName
-            }
+    if ($Spec.Plugin) {
+        $outbound.plugin = $Spec.Plugin
+    }
 
-            $outbound.transport = $transport
+    if ($Spec.PluginOpts) {
+        $outbound.plugin_opts = $Spec.PluginOpts
+    }
+
+    return $outbound
+}
+
+function New-Hysteria2Outbound {
+    param(
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Spec
+    )
+
+    $outbound = @{
+        type        = 'hysteria2'
+        tag         = 'proxy'
+        server      = $Spec.Server
+        server_port = $Spec.Port
+        password    = $Spec.Password
+        tls         = @{
+            enabled     = $true
+            server_name = $Spec.ServerName
+            insecure    = $Spec.Insecure
         }
-        'httpupgrade' {
-            $transport = @{
-                type = 'httpupgrade'
-            }
+    }
 
-            if ($Spec.TransportHost) {
-                $transport.host = $Spec.TransportHost
-            }
+    if (-not (Test-Ipv4Address -Value $Spec.Server)) {
+        $outbound.domain_resolver = @{
+            server   = 'local'
+            strategy = 'prefer_ipv4'
+        }
+    }
 
-            if ($Spec.TransportPath) {
-                $transport.path = $Spec.TransportPath
-            }
+    if ($Spec.UtlsFingerprint) {
+        $outbound.tls.utls = @{
+            enabled     = $true
+            fingerprint = $Spec.UtlsFingerprint
+        }
+    }
 
-            $outbound.transport = $transport
+    if ($Spec.UpMbps -gt 0) {
+        $outbound.up_mbps = $Spec.UpMbps
+    }
+
+    if ($Spec.DownMbps -gt 0) {
+        $outbound.down_mbps = $Spec.DownMbps
+    }
+
+    if ($Spec.ObfsType) {
+        $outbound.obfs = @{
+            type = $Spec.ObfsType
+        }
+
+        if ($Spec.ObfsPassword) {
+            $outbound.obfs.password = $Spec.ObfsPassword
         }
     }
 
@@ -1148,7 +1313,7 @@ function New-VmessOutbound {
 function New-SingBoxConfig {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet('SOCKS5', 'VLESS', 'VMESS')]
+        [ValidateSet('SOCKS5', 'VLESS', 'VMESS', 'TROJAN', 'SHADOWSOCKS', 'HYSTERIA2')]
         [string]$Mode,
         [Parameter(Mandatory = $true)]
         [hashtable]$ProxySpec
@@ -1191,9 +1356,60 @@ function New-SingBoxConfig {
             $additionalCidrs += Get-IpCidr -IpAddress $ProxySpec.Server
         }
     }
-    else {
+    elseif ($Mode -eq 'VMESS') {
         $config.outbounds = @(
             (New-VmessOutbound -Spec $ProxySpec),
+            @{
+                type = 'direct'
+                tag  = 'direct'
+            },
+            @{
+                type = 'block'
+                tag  = 'block'
+            }
+        )
+
+        if (Test-Ipv4Address -Value $ProxySpec.Server) {
+            $additionalCidrs += Get-IpCidr -IpAddress $ProxySpec.Server
+        }
+    }
+    elseif ($Mode -eq 'TROJAN') {
+        $config.outbounds = @(
+            (New-TrojanOutbound -Spec $ProxySpec),
+            @{
+                type = 'direct'
+                tag  = 'direct'
+            },
+            @{
+                type = 'block'
+                tag  = 'block'
+            }
+        )
+
+        if (Test-Ipv4Address -Value $ProxySpec.Server) {
+            $additionalCidrs += Get-IpCidr -IpAddress $ProxySpec.Server
+        }
+    }
+    elseif ($Mode -eq 'SHADOWSOCKS') {
+        $config.outbounds = @(
+            (New-ShadowsocksOutbound -Spec $ProxySpec),
+            @{
+                type = 'direct'
+                tag  = 'direct'
+            },
+            @{
+                type = 'block'
+                tag  = 'block'
+            }
+        )
+
+        if (Test-Ipv4Address -Value $ProxySpec.Server) {
+            $additionalCidrs += Get-IpCidr -IpAddress $ProxySpec.Server
+        }
+    }
+    else {
+        $config.outbounds = @(
+            (New-Hysteria2Outbound -Spec $ProxySpec),
             @{
                 type = 'direct'
                 tag  = 'direct'
@@ -1378,6 +1594,29 @@ echo
 "@
 }
 
+function New-Hysteria2ProbeCommand {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Server,
+        [Parameter(Mandatory = $true)]
+        [int]$Port
+    )
+
+    return @"
+set -euo pipefail
+echo '=== SERVER ==='
+whoami
+uname -a
+echo
+echo '=== DNS RESOLUTION ==='
+getent ahostsv4 $Server | head -n 3 || true
+echo
+echo '=== HYSTERIA2 UDP ==='
+(timeout 5 bash -lc 'cat < /dev/null > /dev/udp/$Server/$Port' && echo SENT) || echo FAIL
+echo
+"@
+}
+
 function New-SocksVerifyCommand {
     param(
         [Parameter(Mandatory = $true)]
@@ -1458,6 +1697,46 @@ echo /etc/sing-box/config.json
     return $command.Replace('__PUBLIC_IP_UNAVAILABLE__', (Get-Text 'PublicIpUnavailable')).Replace('__SERVER__', $Server).Replace('__PORT__', [string]$Port)
 }
 
+function New-Hysteria2VerifyCommand {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Server,
+        [Parameter(Mandatory = $true)]
+        [int]$Port
+    )
+
+    $command = @'
+set -euo pipefail
+echo '=== ENABLED ==='
+systemctl is-enabled sing-box
+echo
+echo '=== ACTIVE ==='
+systemctl is-active sing-box
+echo
+echo '=== UPSTREAM ENDPOINT ==='
+echo '__SERVER__:__PORT__'
+echo
+echo '=== EGRESS IP ==='
+PUBLIC_IP="$(curl -4 -s --max-time 10 https://api.ipify.org || true)"
+if [ -z "$PUBLIC_IP" ]; then
+  PUBLIC_IP="$(curl -4 -s --max-time 10 https://ipv4.icanhazip.com || true)"
+fi
+if [ -z "$PUBLIC_IP" ]; then
+  echo '__PUBLIC_IP_UNAVAILABLE__'
+else
+  printf '%s\n' "$PUBLIC_IP" | tr -d '\r'
+fi
+echo
+echo '=== HYSTERIA2 UDP ==='
+(timeout 5 bash -lc 'cat < /dev/null > /dev/udp/__SERVER__/__PORT__' && echo SENT) || echo FAIL
+echo
+echo '=== CONFIG PATH ==='
+echo /etc/sing-box/config.json
+'@
+
+    return $command.Replace('__PUBLIC_IP_UNAVAILABLE__', (Get-Text 'PublicIpUnavailable')).Replace('__SERVER__', $Server).Replace('__PORT__', [string]$Port)
+}
+
 Ensure-PoshSsh
 
 $serverIp = Read-RequiredValue -Prompt (Get-Text 'ServerIpPrompt')
@@ -1470,7 +1749,7 @@ $sshUser = Read-RequiredValue -Prompt (Get-Text 'SshUsernamePrompt')
 $sshPasswordSecure = Read-Host (Get-Text 'SshPasswordPrompt') -AsSecureString
 $sshPasswordPlain = Get-PlainTextFromSecureString -SecureString $sshPasswordSecure
 
-$mode = Read-ChoiceValue -Prompt (Get-Text 'ProxyModePrompt') -Choices @('VLESS', 'SOCKS5') -ChoiceLabels @((Get-Text 'VlessModeLabel'), (Get-Text 'SocksModeLabel')) -Default 'VLESS'
+$mode = Read-ChoiceValue -Prompt (Get-Text 'ProxyModePrompt') -Choices @('VLESS', 'TROJAN', 'HYSTERIA2', 'SHADOWSOCKS', 'SOCKS5') -ChoiceLabels @((Get-Text 'VlessModeLabel'), (Get-Text 'TrojanModeLabel'), (Get-Text 'Hysteria2ModeLabel'), (Get-Text 'ShadowsocksModeLabel'), (Get-Text 'SocksModeLabel')) -Default 'VLESS'
 $configMode = $mode
 $proxySpec = @{}
 $bootstrapProxy = ''
@@ -1493,7 +1772,7 @@ if ($mode -eq 'SOCKS5') {
     $probeCommand = New-SocksProbeCommand -Server $socksServer -Port $socksPort
     $verifyCommand = New-SocksVerifyCommand -Server $socksServer -Port $socksPort
 }
-else {
+elseif ($mode -eq 'VLESS') {
     Write-Host ''
     Write-Host (Get-Text 'VlessModeIntro')
     $vlessInputMode = Read-ChoiceValue -Prompt (Get-Text 'VlessInputModePrompt') -Choices @('uri', 'manual') -ChoiceLabels @((Get-Text 'VlessInputUriLabel'), (Get-Text 'VlessInputManualLabel')) -Default 'uri'
@@ -1601,6 +1880,109 @@ else {
 
     if ($proxySpec.Transport -eq 'ws' -and [string]::IsNullOrWhiteSpace($proxySpec.TransportPath)) {
         $proxySpec.TransportPath = '/'
+    }
+
+    $probeCommand = New-VlessProbeCommand -Server $proxySpec.Server -Port $proxySpec.Port
+    $verifyCommand = New-VlessVerifyCommand -Server $proxySpec.Server -Port $proxySpec.Port
+
+    Write-Host ''
+    Write-Host (Get-Text 'VlessNoBootstrap1')
+    Write-Host (Get-Text 'VlessNoBootstrap2')
+}
+elseif ($mode -eq 'TROJAN') {
+    Write-Host ''
+    Write-Host (Get-Text 'TrojanModeIntro')
+
+    $trojanServer = Read-RequiredValue -Prompt (Get-Text 'TrojanServerPrompt')
+    while (-not (Test-HostOrIpv4 -Value $trojanServer)) {
+        Write-Warning (Get-Text 'InvalidTrojanServer')
+        $trojanServer = Read-RequiredValue -Prompt (Get-Text 'TrojanServerPrompt')
+    }
+
+    $trojanPort = Read-Port -Prompt (Get-Text 'TrojanPortPrompt')
+    $trojanTransport = Read-ChoiceValue -Prompt (Get-Text 'TransportPrompt') -Choices @('none', 'ws', 'grpc', 'httpupgrade') -Default 'none'
+    $proxySpec = @{
+        Server               = $trojanServer
+        Port                 = $trojanPort
+        Password             = Read-RequiredValue -Prompt (Get-Text 'TrojanPasswordPrompt')
+        ServerName           = Read-RequiredValue -Prompt (Get-Text 'TlsServerNamePrompt')
+        Insecure             = Read-YesNo -Prompt (Get-Text 'AllowInsecurePrompt') -Default $false
+        UtlsFingerprint      = Read-OptionalValue -Prompt (Get-Text 'UtlsFingerprintPrompt') -Default ''
+        Transport            = $trojanTransport
+        TransportHost        = ''
+        TransportPath        = ''
+        TransportServiceName = ''
+    }
+
+    switch ($trojanTransport) {
+        'ws' {
+            $proxySpec.TransportPath = Read-OptionalValue -Prompt (Get-Text 'WsPathPrompt') -Default '/'
+            $proxySpec.TransportHost = Read-OptionalValue -Prompt (Get-Text 'WsHostPrompt') -Default ''
+        }
+        'grpc' {
+            $proxySpec.TransportServiceName = Read-RequiredValue -Prompt (Get-Text 'GrpcServicePrompt')
+        }
+        'httpupgrade' {
+            $proxySpec.TransportPath = Read-OptionalValue -Prompt (Get-Text 'HttpUpgradePathPrompt') -Default '/'
+            $proxySpec.TransportHost = Read-OptionalValue -Prompt (Get-Text 'HttpUpgradeHostPrompt') -Default ''
+        }
+    }
+
+    $probeCommand = New-VlessProbeCommand -Server $proxySpec.Server -Port $proxySpec.Port
+    $verifyCommand = New-VlessVerifyCommand -Server $proxySpec.Server -Port $proxySpec.Port
+
+    Write-Host ''
+    Write-Host (Get-Text 'VlessNoBootstrap1')
+    Write-Host (Get-Text 'VlessNoBootstrap2')
+}
+elseif ($mode -eq 'HYSTERIA2') {
+    Write-Host ''
+    Write-Host (Get-Text 'Hysteria2ModeIntro')
+
+    $hy2Server = Read-RequiredValue -Prompt (Get-Text 'Hysteria2ServerPrompt')
+    while (-not (Test-HostOrIpv4 -Value $hy2Server)) {
+        Write-Warning (Get-Text 'InvalidHysteria2Server')
+        $hy2Server = Read-RequiredValue -Prompt (Get-Text 'Hysteria2ServerPrompt')
+    }
+
+    $proxySpec = @{
+        Server          = $hy2Server
+        Port            = Read-Port -Prompt (Get-Text 'Hysteria2PortPrompt')
+        Password        = Read-RequiredValue -Prompt (Get-Text 'Hysteria2PasswordPrompt')
+        ServerName      = Read-RequiredValue -Prompt (Get-Text 'TlsServerNamePrompt')
+        Insecure        = Read-YesNo -Prompt (Get-Text 'AllowInsecurePrompt') -Default $false
+        UtlsFingerprint = Read-OptionalValue -Prompt (Get-Text 'UtlsFingerprintPrompt') -Default ''
+        UpMbps          = Read-OptionalInt -Prompt (Get-Text 'Hysteria2UpMbpsPrompt') -Default 100
+        DownMbps        = Read-OptionalInt -Prompt (Get-Text 'Hysteria2DownMbpsPrompt') -Default 100
+        ObfsType        = Read-OptionalValue -Prompt (Get-Text 'Hysteria2ObfsTypePrompt') -Default ''
+        ObfsPassword    = ''
+    }
+
+    if ($proxySpec.ObfsType) {
+        $proxySpec.ObfsPassword = Read-RequiredValue -Prompt (Get-Text 'Hysteria2ObfsPasswordPrompt')
+    }
+
+    $probeCommand = New-Hysteria2ProbeCommand -Server $proxySpec.Server -Port $proxySpec.Port
+    $verifyCommand = New-Hysteria2VerifyCommand -Server $proxySpec.Server -Port $proxySpec.Port
+
+    Write-Host ''
+    Write-Host (Get-Text 'VlessNoBootstrap1')
+    Write-Host (Get-Text 'VlessNoBootstrap2')
+}
+elseif ($mode -eq 'SHADOWSOCKS') {
+    $ssServer = Read-RequiredValue -Prompt (Get-Text 'ShadowsocksServerPrompt')
+    while (-not (Test-HostOrIpv4 -Value $ssServer)) {
+        Write-Warning (Get-Text 'InvalidShadowsocksServer')
+        $ssServer = Read-RequiredValue -Prompt (Get-Text 'ShadowsocksServerPrompt')
+    }
+
+    $proxySpec = @{
+        Server     = $ssServer
+        Port       = Read-Port -Prompt (Get-Text 'ShadowsocksPortPrompt')
+        Method     = Read-RequiredValue -Prompt (Get-Text 'ShadowsocksMethodPrompt')
+        Password   = Read-RequiredValue -Prompt (Get-Text 'ShadowsocksPasswordPrompt')
+        Plugin     = Read-OptionalValue -Prompt (Get-Text 'ShadowsocksPluginPrompt') -Default ''
+        PluginOpts = Read-OptionalValue -Prompt (Get-Text 'ShadowsocksPluginOptsPrompt') -Default ''
     }
 
     $probeCommand = New-VlessProbeCommand -Server $proxySpec.Server -Port $proxySpec.Port
