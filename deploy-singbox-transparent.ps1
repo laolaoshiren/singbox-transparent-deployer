@@ -1,10 +1,18 @@
 ﻿[CmdletBinding()]
 param(
-    [string]$Language = 'zh-CN'
+    [string]$Language = ''
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+try {
+    if (([Net.ServicePointManager]::SecurityProtocol -band [Net.SecurityProtocolType]::Tls12) -eq 0) {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    }
+}
+catch {
+}
 
 function Resolve-Language {
     param(
@@ -25,7 +33,34 @@ function Resolve-Language {
     }
 }
 
-$script:Language = Resolve-Language -Value $Language
+function Select-LanguageInteractive {
+    while ($true) {
+        Write-Host '选择语言 / Select language'
+        Write-Host '1. 中文 [默认]'
+        Write-Host '2. English'
+        $choice = Read-Host '请输入选项编号 / Select option number [1]'
+        if ([string]::IsNullOrWhiteSpace($choice)) {
+            return 'zh-CN'
+        }
+
+        switch ($choice.Trim().ToLowerInvariant()) {
+            '1' { return 'zh-CN' }
+            '2' { return 'en-US' }
+            'zh' { return 'zh-CN' }
+            'zh-cn' { return 'zh-CN' }
+            'en' { return 'en-US' }
+            'en-us' { return 'en-US' }
+            default { Write-Warning '请输入 1 或 2。 / Enter 1 or 2.' }
+        }
+    }
+}
+
+$script:Language = if ([string]::IsNullOrWhiteSpace($Language)) {
+    Select-LanguageInteractive
+}
+else {
+    Resolve-Language -Value $Language
+}
 $script:Messages = @{
     'zh-CN' = @{
         DefaultTag               = '默认'
@@ -35,24 +70,31 @@ $script:Messages = @{
         NoLabel                  = '否'
         EnterOneOrTwo            = '请输入 1 或 2。'
         ValidPortRange           = '请输入 1 到 65535 之间的有效端口。'
-        UriSchemeInvalid         = 'URI 协议必须是 vless://'
+        UriSchemeInvalid         = 'URI 协议必须是 vless:// 或 vmess://'
         UriMissingUuid           = 'VLESS URI 缺少 UUID。'
         UriMissingServer         = 'VLESS URI 缺少服务器地址。'
         UriMissingPort           = 'VLESS URI 缺少有效端口。'
+        VmessDecodeFailed        = 'VMess 链接解码失败。'
+        VmessJsonInvalid         = 'VMess 链接中的 JSON 数据无效。'
+        VmessMissingServer       = 'VMess 链接缺少服务器地址。'
+        VmessMissingPort         = 'VMess 链接缺少有效端口。'
+        VmessMissingUuid         = 'VMess 链接缺少 UUID。'
         InstallPoshSsh           = '未检测到 Posh-SSH，正在为当前用户安装...'
         ServerIpPrompt           = 'Ubuntu 服务器 IPv4'
         InvalidServerIp          = '请输入有效的 IPv4 服务器地址。'
         SshUsernamePrompt        = 'SSH 用户名'
         SshPasswordPrompt        = 'SSH 密码（同时作为 sudo 密码）'
         ProxyModePrompt          = '代理模式'
+        VlessModeLabel           = 'VLESS / VMess'
+        SocksModeLabel           = 'SOCKS5'
         SocksServerPrompt        = 'SOCKS5 服务器'
         InvalidSocksServer       = '请输入有效的 SOCKS5 主机名或 IPv4 地址。'
         SocksPortPrompt          = 'SOCKS5 端口'
-        VlessModeIntro           = 'VLESS 模式支持 direct/tls/reality，以及 none/ws/grpc/httpupgrade 传输。'
+        VlessModeIntro           = 'VLESS 模式支持 direct/tls/reality，以及 none/ws/grpc/httpupgrade 传输，也支持直接粘贴 vmess:// 分享链接。'
         VlessInputModePrompt     = 'VLESS 输入方式'
-        VlessInputUriLabel       = 'URI 链接'
+        VlessInputUriLabel       = 'URI 链接（支持 vless:// / vmess://）'
         VlessInputManualLabel    = '手动输入'
-        VlessUriPrompt           = 'VLESS URI'
+        VlessUriPrompt           = 'VLESS / VMess URI'
         VlessServerPrompt        = 'VLESS 服务器'
         InvalidVlessServer       = '请输入有效的 VLESS 主机名或 IPv4 地址。'
         VlessPortPrompt          = 'VLESS 端口'
@@ -77,12 +119,17 @@ $script:Messages = @{
         VlessTransportInvalid    = 'VLESS 传输类型必须是 none、ws、grpc 或 httpupgrade。'
         TlsServerNameRequired    = 'TLS 或 Reality 模式必须提供 server_name / SNI。'
         RealityPublicKeyRequired = 'Reality 模式必须提供 public_key。'
-        VlessNoBootstrap1        = '注意：VLESS 模式不会通过 VLESS 节点为安装过程引导下载。'
-        VlessNoBootstrap2        = '首次运行时，远端服务器必须能直接下载 sing-box 安装脚本。'
+        VlessNoBootstrap1        = '注意：VLESS / VMess 模式不会通过节点为安装过程引导下载。'
+        VlessNoBootstrap2        = '首次运行时，远端服务器需要能直接访问 sing-box 官方安装源。'
         ConnectingRemote         = '正在连接远端服务器...'
         RunningChecks            = '正在执行远端连通性检查...'
         UpstreamUnreachable      = '远端服务器无法连通所选上游代理。'
         InstallingConfiguring    = '正在安装并配置 sing-box...'
+        InstallStrategyBootstrap = '检测到安装引导代理，优先通过 install.sh 下载 sing-box。'
+        InstallStrategyApt       = '未使用引导代理，先尝试 sing-box 官方 APT 源，再回退到 install.sh。'
+        InstallAttemptApt        = '正在尝试 sing-box 官方 APT 源...'
+        InstallAttemptScript     = '正在尝试 sing-box 官方安装脚本...'
+        InstallAptFailed         = '官方 APT 源安装失败，回退到安装脚本。'
         RemoteInstallFailed      = '远端安装或配置失败。'
         VerifyingStatus          = '正在验证服务状态和路由结果...'
         VerificationFailed       = '部署后的验证失败。'
@@ -96,24 +143,31 @@ $script:Messages = @{
         NoLabel                  = 'No'
         EnterOneOrTwo            = 'Enter 1 or 2.'
         ValidPortRange           = 'Enter a valid port between 1 and 65535.'
-        UriSchemeInvalid         = 'The URI scheme must be vless://'
+        UriSchemeInvalid         = 'The URI scheme must be vless:// or vmess://'
         UriMissingUuid           = 'The VLESS URI is missing the UUID.'
         UriMissingServer         = 'The VLESS URI is missing the server address.'
         UriMissingPort           = 'The VLESS URI is missing a valid port.'
+        VmessDecodeFailed        = 'Failed to decode the VMess share link.'
+        VmessJsonInvalid         = 'The VMess share link does not contain valid JSON.'
+        VmessMissingServer       = 'The VMess share link is missing the server address.'
+        VmessMissingPort         = 'The VMess share link is missing a valid port.'
+        VmessMissingUuid         = 'The VMess share link is missing the UUID.'
         InstallPoshSsh           = 'Posh-SSH not found. Installing for the current user...'
         ServerIpPrompt           = 'Ubuntu server IPv4'
         InvalidServerIp          = 'Enter a valid IPv4 server address.'
         SshUsernamePrompt        = 'SSH username'
         SshPasswordPrompt        = 'SSH password (also used for sudo)'
         ProxyModePrompt          = 'Proxy mode'
+        VlessModeLabel           = 'VLESS / VMess'
+        SocksModeLabel           = 'SOCKS5'
         SocksServerPrompt        = 'SOCKS5 server'
         InvalidSocksServer       = 'Enter a valid SOCKS5 hostname or IPv4 address.'
         SocksPortPrompt          = 'SOCKS5 port'
-        VlessModeIntro           = 'VLESS mode supports direct/tls/reality and transport none/ws/grpc/httpupgrade.'
+        VlessModeIntro           = 'VLESS mode supports direct/tls/reality and transport none/ws/grpc/httpupgrade, and also accepts vmess:// share links.'
         VlessInputModePrompt     = 'VLESS input mode'
-        VlessInputUriLabel       = 'URI'
+        VlessInputUriLabel       = 'URI (vless:// / vmess://)'
         VlessInputManualLabel    = 'manual'
-        VlessUriPrompt           = 'VLESS URI'
+        VlessUriPrompt           = 'VLESS / VMess URI'
         VlessServerPrompt        = 'VLESS server'
         InvalidVlessServer       = 'Enter a valid VLESS hostname or IPv4 address.'
         VlessPortPrompt          = 'VLESS port'
@@ -138,12 +192,17 @@ $script:Messages = @{
         VlessTransportInvalid    = 'The VLESS transport value must be none, ws, grpc, or httpupgrade.'
         TlsServerNameRequired    = 'TLS or Reality mode requires server_name / SNI.'
         RealityPublicKeyRequired = 'Reality mode requires public_key.'
-        VlessNoBootstrap1        = 'Note: VLESS mode does not bootstrap package downloads through the VLESS node.'
-        VlessNoBootstrap2        = 'The remote server must be able to download the sing-box installer directly on the first run.'
+        VlessNoBootstrap1        = 'Note: VLESS / VMess mode does not bootstrap package downloads through the node.'
+        VlessNoBootstrap2        = 'On the first run, the remote server must be able to reach the official sing-box install source directly.'
         ConnectingRemote         = 'Connecting to the remote server...'
         RunningChecks            = 'Running remote reachability checks...'
         UpstreamUnreachable      = 'The remote server cannot reach the selected upstream proxy.'
         InstallingConfiguring    = 'Installing and configuring sing-box...'
+        InstallStrategyBootstrap = 'A bootstrap proxy is available, so install.sh will be used first.'
+        InstallStrategyApt       = 'No bootstrap proxy is available, so the official APT repository will be tried before install.sh.'
+        InstallAttemptApt        = 'Trying the official sing-box APT repository...'
+        InstallAttemptScript     = 'Trying the official sing-box install script...'
+        InstallAptFailed         = 'The official APT repository failed. Falling back to the install script.'
         RemoteInstallFailed      = 'Remote installation/configuration failed.'
         VerifyingStatus          = 'Verifying service status and routing...'
         VerificationFailed       = 'Verification failed after deployment.'
@@ -402,6 +461,29 @@ function Get-FirstNonEmptyValue {
     return ''
 }
 
+function Get-JsonPropertyValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        $Object,
+        [Parameter(Mandatory = $true)]
+        [string[]]$Names
+    )
+
+    foreach ($name in $Names) {
+        $property = $Object.PSObject.Properties[$name]
+        if ($null -eq $property) {
+            continue
+        }
+
+        $stringValue = [string]$property.Value
+        if (-not [string]::IsNullOrWhiteSpace($stringValue)) {
+            return $stringValue.Trim()
+        }
+    }
+
+    return ''
+}
+
 function ConvertFrom-UriQuery {
     param(
         [string]$Query
@@ -444,6 +526,28 @@ function Get-IpCidr {
     return '{0}/32' -f $IpAddress
 }
 
+function ConvertFrom-Base64Text {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Value
+    )
+
+    $normalized = ($Value -replace '\s', '').Trim()
+    $normalized = $normalized.Replace('-', '+').Replace('_', '/')
+    $paddingLength = $normalized.Length % 4
+    if ($paddingLength -gt 0) {
+        $normalized += ('=' * (4 - $paddingLength))
+    }
+
+    try {
+        $bytes = [Convert]::FromBase64String($normalized)
+        return [Text.Encoding]::UTF8.GetString($bytes)
+    }
+    catch {
+        throw (Get-Text 'VmessDecodeFailed')
+    }
+}
+
 function ConvertFrom-VlessUri {
     param(
         [Parameter(Mandatory = $true)]
@@ -481,6 +585,7 @@ function ConvertFrom-VlessUri {
     }
 
     return @{
+        NodeType             = 'VLESS'
         Server               = $uri.Host
         Port                 = $uri.Port
         Uuid                 = $uri.UserInfo
@@ -496,6 +601,115 @@ function ConvertFrom-VlessUri {
         TransportPath        = $path
         TransportServiceName = Get-FirstNonEmptyValue -Values @($query['serviceName'], $query['service_name'])
     }
+}
+
+function ConvertFrom-VmessUri {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$UriString
+    )
+
+    $payload = $UriString.Trim().Substring(8)
+    $fragmentIndex = $payload.IndexOf('#')
+    if ($fragmentIndex -ge 0) {
+        $payload = $payload.Substring(0, $fragmentIndex)
+    }
+
+    $payload = [Uri]::UnescapeDataString($payload)
+    if ([string]::IsNullOrWhiteSpace($payload)) {
+        throw (Get-Text 'VmessDecodeFailed')
+    }
+
+    $jsonText = ConvertFrom-Base64Text -Value $payload
+
+    try {
+        $spec = $jsonText | ConvertFrom-Json
+    }
+    catch {
+        throw (Get-Text 'VmessJsonInvalid')
+    }
+
+    $server = Get-JsonPropertyValue -Object $spec -Names @('add', 'address', 'server')
+    if ([string]::IsNullOrWhiteSpace($server)) {
+        throw (Get-Text 'VmessMissingServer')
+    }
+
+    $portText = Get-JsonPropertyValue -Object $spec -Names @('port', 'server_port')
+    $port = 0
+    if (-not [int]::TryParse($portText, [ref]$port) -or $port -lt 1 -or $port -gt 65535) {
+        throw (Get-Text 'VmessMissingPort')
+    }
+
+    $uuid = Get-JsonPropertyValue -Object $spec -Names @('id', 'uuid')
+    if ([string]::IsNullOrWhiteSpace($uuid)) {
+        throw (Get-Text 'VmessMissingUuid')
+    }
+
+    $network = (Get-FirstNonEmptyValue -Values @(
+        (Get-JsonPropertyValue -Object $spec -Names @('net')),
+        'none'
+    )).ToLowerInvariant()
+
+    $transport = switch ($network) {
+        'tcp' { 'none' }
+        'http' { 'none' }
+        '' { 'none' }
+        default { $network }
+    }
+
+    $tlsMode = (Get-JsonPropertyValue -Object $spec -Names @('tls')).ToLowerInvariant()
+    $serverName = Get-FirstNonEmptyValue -Values @(
+        (Get-JsonPropertyValue -Object $spec -Names @('sni', 'serverName')),
+        $(if ($tlsMode -eq 'tls' -and -not (Test-Ipv4Address -Value $server)) { $server } else { '' })
+    )
+
+    $path = Get-JsonPropertyValue -Object $spec -Names @('path')
+    $transportHost = Get-JsonPropertyValue -Object $spec -Names @('host')
+    $serviceName = Get-FirstNonEmptyValue -Values @(
+        (Get-JsonPropertyValue -Object $spec -Names @('serviceName', 'service_name')),
+        $path
+    )
+
+    $alterId = 0
+    [void][int]::TryParse((Get-JsonPropertyValue -Object $spec -Names @('aid', 'alterId', 'alter_id')), [ref]$alterId)
+
+    return @{
+        NodeType             = 'VMESS'
+        Server               = $server
+        Port                 = $port
+        Uuid                 = $uuid
+        Security             = if ($tlsMode -eq 'tls') { 'tls' } else { 'none' }
+        SecurityCipher       = Get-FirstNonEmptyValue -Values @(
+            (Get-JsonPropertyValue -Object $spec -Names @('scy', 'cipher', 'security')),
+            'auto'
+        )
+        AlterId              = $alterId
+        ServerName           = $serverName
+        Insecure             = (ConvertTo-BoolLike -Value (Get-JsonPropertyValue -Object $spec -Names @('insecure', 'allowInsecure')))
+        UtlsFingerprint      = Get-JsonPropertyValue -Object $spec -Names @('fp', 'fingerprint')
+        Transport            = $transport
+        TransportHost        = $transportHost
+        TransportPath        = $path
+        TransportServiceName = $serviceName
+    }
+}
+
+function ConvertFrom-ProxyUri {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$UriString
+    )
+
+    $trimmed = $UriString.Trim()
+    if ($trimmed -match '^(?i)vless://') {
+        return ConvertFrom-VlessUri -UriString $trimmed
+    }
+
+    if ($trimmed -match '^(?i)vmess://') {
+        return ConvertFrom-VmessUri -UriString $trimmed
+    }
+
+    throw (Get-Text 'UriSchemeInvalid')
 }
 
 function Ensure-PoshSsh {
@@ -794,10 +1008,105 @@ function New-VlessOutbound {
     return $outbound
 }
 
+function New-VmessOutbound {
+    param(
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Spec
+    )
+
+    $outbound = @{
+        type        = 'vmess'
+        tag         = 'proxy'
+        server      = $Spec.Server
+        server_port = $Spec.Port
+        uuid        = $Spec.Uuid
+        security    = $Spec.SecurityCipher
+    }
+
+    if ($Spec.AlterId -gt 0) {
+        $outbound.alter_id = $Spec.AlterId
+    }
+
+    if (-not (Test-Ipv4Address -Value $Spec.Server)) {
+        $outbound.domain_resolver = @{
+            server   = 'local'
+            strategy = 'prefer_ipv4'
+        }
+    }
+
+    if ($Spec.Security -eq 'tls') {
+        $tls = @{
+            enabled  = $true
+            insecure = $Spec.Insecure
+        }
+
+        if ($Spec.ServerName) {
+            $tls.server_name = $Spec.ServerName
+        }
+
+        if ($Spec.UtlsFingerprint) {
+            $tls.utls = @{
+                enabled     = $true
+                fingerprint = $Spec.UtlsFingerprint
+            }
+        }
+
+        $outbound.tls = $tls
+    }
+
+    switch ($Spec.Transport) {
+        'ws' {
+            $transport = @{
+                type = 'ws'
+            }
+
+            if ($Spec.TransportPath) {
+                $transport.path = $Spec.TransportPath
+            }
+
+            if ($Spec.TransportHost) {
+                $transport.headers = @{
+                    Host = $Spec.TransportHost
+                }
+            }
+
+            $outbound.transport = $transport
+        }
+        'grpc' {
+            $transport = @{
+                type = 'grpc'
+            }
+
+            if ($Spec.TransportServiceName) {
+                $transport.service_name = $Spec.TransportServiceName
+            }
+
+            $outbound.transport = $transport
+        }
+        'httpupgrade' {
+            $transport = @{
+                type = 'httpupgrade'
+            }
+
+            if ($Spec.TransportHost) {
+                $transport.host = $Spec.TransportHost
+            }
+
+            if ($Spec.TransportPath) {
+                $transport.path = $Spec.TransportPath
+            }
+
+            $outbound.transport = $transport
+        }
+    }
+
+    return $outbound
+}
+
 function New-SingBoxConfig {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet('SOCKS5', 'VLESS')]
+        [ValidateSet('SOCKS5', 'VLESS', 'VMESS')]
         [string]$Mode,
         [Parameter(Mandatory = $true)]
         [hashtable]$ProxySpec
@@ -823,9 +1132,22 @@ function New-SingBoxConfig {
             $additionalCidrs += Get-IpCidr -IpAddress $ProxySpec.Server
         }
     }
-    else {
+    elseif ($Mode -eq 'VLESS') {
         $config.outbounds = @(
             (New-VlessOutbound -Spec $ProxySpec),
+            @{
+                type = 'direct'
+                tag  = 'direct'
+            },
+            @{
+                type = 'block'
+                tag  = 'block'
+            }
+        )
+    }
+    else {
+        $config.outbounds = @(
+            (New-VmessOutbound -Spec $ProxySpec),
             @{
                 type = 'direct'
                 tag  = 'direct'
@@ -850,6 +1172,12 @@ function New-RemoteSetupScript {
 
     $configBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($ConfigJson))
     $bootstrapBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($BootstrapProxy))
+    $installStrategyMessage = if ([string]::IsNullOrWhiteSpace($BootstrapProxy)) {
+        Get-Text 'InstallStrategyApt'
+    }
+    else {
+        Get-Text 'InstallStrategyBootstrap'
+    }
 
     $script = @'
 #!/usr/bin/env bash
@@ -857,15 +1185,53 @@ set -euo pipefail
 
 BOOTSTRAP_PROXY="$(printf '%s' '__BOOTSTRAP_BASE64__' | base64 -d)"
 
-if ! command -v curl >/dev/null 2>&1; then
-  echo "curl is required on the remote host." >&2
-  exit 1
-fi
+echo "__INSTALL_STRATEGY__"
 
-if ! command -v nft >/dev/null 2>&1; then
-  echo "nft was not found. Install nftables on the remote host first." >&2
-  exit 1
-fi
+export DEBIAN_FRONTEND=noninteractive
+
+ensure_bootstrap_packages() {
+  local need_update=0
+  if ! command -v curl >/dev/null 2>&1; then
+    need_update=1
+  fi
+
+  if ! command -v nft >/dev/null 2>&1; then
+    need_update=1
+  fi
+
+  if ! command -v gpg >/dev/null 2>&1; then
+    need_update=1
+  fi
+
+  if [ "$need_update" -eq 1 ]; then
+    apt-get update
+    apt-get install -y ca-certificates curl gnupg nftables
+  fi
+}
+
+install_from_apt_repo() {
+  echo "__INSTALL_ATTEMPT_APT__"
+  ensure_bootstrap_packages
+  install -d -m 0755 /etc/apt/keyrings
+  curl -fsSL --connect-timeout 15 --retry 2 https://sing-box.app/gpg.key -o /etc/apt/keyrings/sagernet.asc
+  chmod a+r /etc/apt/keyrings/sagernet.asc
+  cat <<'EOF_SOURCE' > /etc/apt/sources.list.d/sagernet.sources
+Types: deb
+URIs: https://deb.sagernet.org/
+Suites: *
+Components: *
+Enabled: yes
+Signed-By: /etc/apt/keyrings/sagernet.asc
+EOF_SOURCE
+  apt-get update
+  apt-get install -y sing-box
+}
+
+install_from_script() {
+  echo "__INSTALL_ATTEMPT_SCRIPT__"
+  ensure_bootstrap_packages
+  curl -fsSL --connect-timeout 15 --retry 2 https://sing-box.app/install.sh | sh
+}
 
 if [ -n "$BOOTSTRAP_PROXY" ]; then
   export ALL_PROXY="$BOOTSTRAP_PROXY"
@@ -876,7 +1242,14 @@ if [ -n "$BOOTSTRAP_PROXY" ]; then
   export http_proxy="$BOOTSTRAP_PROXY"
 fi
 
-curl -fsSL https://sing-box.app/install.sh | sh
+if [ -n "$BOOTSTRAP_PROXY" ]; then
+  install_from_script
+else
+  if ! install_from_apt_repo; then
+    echo "__INSTALL_APT_FAILED__"
+    install_from_script
+  fi
+fi
 
 install -d -m 0755 /etc/sing-box
 if [ -f /etc/sing-box/config.json ]; then
@@ -896,7 +1269,7 @@ systemctl is-enabled sing-box >/dev/null
 systemctl is-active sing-box >/dev/null
 '@
 
-    return $script.Replace('__BOOTSTRAP_BASE64__', $bootstrapBase64).Replace('__CONFIG_BASE64__', $configBase64)
+    return $script.Replace('__BOOTSTRAP_BASE64__', $bootstrapBase64).Replace('__CONFIG_BASE64__', $configBase64).Replace('__INSTALL_STRATEGY__', $installStrategyMessage).Replace('__INSTALL_ATTEMPT_APT__', (Get-Text 'InstallAttemptApt')).Replace('__INSTALL_ATTEMPT_SCRIPT__', (Get-Text 'InstallAttemptScript')).Replace('__INSTALL_APT_FAILED__', (Get-Text 'InstallAptFailed'))
 }
 
 function New-SocksProbeCommand {
@@ -1011,7 +1384,8 @@ $sshUser = Read-RequiredValue -Prompt (Get-Text 'SshUsernamePrompt')
 $sshPasswordSecure = Read-Host (Get-Text 'SshPasswordPrompt') -AsSecureString
 $sshPasswordPlain = Get-PlainTextFromSecureString -SecureString $sshPasswordSecure
 
-$mode = Read-ChoiceValue -Prompt (Get-Text 'ProxyModePrompt') -Choices @('SOCKS5', 'VLESS') -Default 'SOCKS5'
+$mode = Read-ChoiceValue -Prompt (Get-Text 'ProxyModePrompt') -Choices @('VLESS', 'SOCKS5') -ChoiceLabels @((Get-Text 'VlessModeLabel'), (Get-Text 'SocksModeLabel')) -Default 'VLESS'
+$configMode = $mode
 $proxySpec = @{}
 $bootstrapProxy = ''
 $probeCommand = ''
@@ -1042,7 +1416,8 @@ else {
         while ($true) {
             try {
                 $vlessUri = Read-RequiredValue -Prompt (Get-Text 'VlessUriPrompt')
-                $proxySpec = ConvertFrom-VlessUri -UriString $vlessUri
+                $proxySpec = ConvertFrom-ProxyUri -UriString $vlessUri
+                $configMode = $proxySpec.NodeType
                 break
             }
             catch {
@@ -1069,6 +1444,7 @@ else {
         $vlessTransport = Read-ChoiceValue -Prompt (Get-Text 'VlessTransportPrompt') -Choices @('none', 'ws', 'grpc', 'httpupgrade') -Default 'none'
 
         $proxySpec = @{
+            NodeType             = 'VLESS'
             Server               = $vlessServer
             Port                 = $vlessPort
             Uuid                 = $vlessUuid
@@ -1121,7 +1497,7 @@ else {
         throw (Get-Text 'VlessUuidInvalid')
     }
 
-    if ($proxySpec.Security -notin @('none', 'tls', 'reality')) {
+    if ($configMode -eq 'VLESS' -and $proxySpec.Security -notin @('none', 'tls', 'reality')) {
         throw (Get-Text 'VlessSecurityInvalid')
     }
 
@@ -1129,11 +1505,11 @@ else {
         throw (Get-Text 'VlessTransportInvalid')
     }
 
-    if ($proxySpec.Security -ne 'none' -and [string]::IsNullOrWhiteSpace($proxySpec.ServerName)) {
+    if ($configMode -eq 'VLESS' -and $proxySpec.Security -ne 'none' -and [string]::IsNullOrWhiteSpace($proxySpec.ServerName)) {
         throw (Get-Text 'TlsServerNameRequired')
     }
 
-    if ($proxySpec.Security -eq 'reality' -and [string]::IsNullOrWhiteSpace($proxySpec.RealityPublicKey)) {
+    if ($configMode -eq 'VLESS' -and $proxySpec.Security -eq 'reality' -and [string]::IsNullOrWhiteSpace($proxySpec.RealityPublicKey)) {
         throw (Get-Text 'RealityPublicKeyRequired')
     }
 
@@ -1149,7 +1525,7 @@ else {
     Write-Host (Get-Text 'VlessNoBootstrap2')
 }
 
-$config = New-SingBoxConfig -Mode $mode -ProxySpec $proxySpec
+$config = New-SingBoxConfig -Mode $configMode -ProxySpec $proxySpec
 $configJson = ConvertTo-JsonString -Value $config
 $setupScript = New-RemoteSetupScript -ConfigJson $configJson -BootstrapProxy $bootstrapProxy
 $credential = [System.Management.Automation.PSCredential]::new($sshUser, $sshPasswordSecure)
